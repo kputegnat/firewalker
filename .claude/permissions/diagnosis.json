@@ -1,0 +1,7 @@
+{
+  "$comment": "Diagnosis / signal cage per SI §7a: harness/state read-only; the script writes the parsed output.",
+  "permissions": {
+    "allow": ["Read", "Grep", "Glob", "Bash(git log:*)", "Bash(git diff:*)"],
+    "deny": ["Edit", "Write", "Bash", "WebFetch", "WebSearch"]
+  }
+}

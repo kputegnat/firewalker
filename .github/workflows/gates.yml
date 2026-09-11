@@ -1,0 +1,44 @@
+# CI gate suite (gates-and-hooks.md CI gate table; SI §7 merge-time controls).
+# Calibration scope: mechanical gates on every PR + main-identity check for
+# orchestrator-owned surfaces. Reviewer gates (10/11) run engine-side; deploy
+# workflows arrive at bootstrap P6 (ADR-0015).
+name: gates
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  mechanical-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: npm ci
+      - name: gate 1 — lint + naming
+        run: sh harness/scripts/gate-1-lint-naming.sh
+      - name: gate 2 — typecheck (tsc strict)
+        run: npx tsc --noEmit -p tsconfig.json
+      - name: gate 3 — tests (locked ACs; pending tags tolerated)
+        run: node harness/run-tests.mjs
+      - name: gate 4 — secrets
+        run: node harness/scripts/secret-scan.mjs
+      - name: gate 5 — dep audit
+        run: npm audit --audit-level=high
+      - name: gate 7 — copy-paste (jscpd)
+        run: npx jscpd --config .jscpd.json
+      # gate 6 (sast/semgrep): pending toolchain decision — see harness/config.json note
+      # gate 8 (route-collision): deferred until the API layer exists
+      # gate 9 (dead-exports): soft; binds with knip once packages have real exports
+  orchestrator-surface-identity:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: status/matrix commits carry the machine identity (SI §7)
+        run: |
+          BAD=$(git log --format='%H %ce' ${{ github.event.before }}..${{ github.sha }} -- kb/status.md kb/product/traceability.md \
+            | grep -v 'orchestrator@harness-engine.invalid' || true)
+          if [ -n "$BAD" ]; then echo "non-machine-identity commit touched an orchestrator surface:"; echo "$BAD"; exit 1; fi

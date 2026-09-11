@@ -1,0 +1,21 @@
+{
+  "$comment": "Worker / conflict-resolver cage per SI §7a: worktree + Claims writes plus claims-exempt kb surfaces; locked tests, specs, status, matrix, manifest denied; push/merge/checkout-main denied (script collects branches). Claims disjointness is enforced by the orchestrator; the locked-test hook adds path-level denial.",
+  "permissions": {
+    "allow": [
+      "Read", "Grep", "Glob", "Edit", "Write",
+      "Bash(git add:*)", "Bash(git commit:*)", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
+      "Bash(node harness/run-tests.mjs:*)", "Bash(sh harness/scripts/gate-1-lint-naming.sh)", "Bash(sh harness/scripts/run-gates-local.sh)",
+      "Bash(npx tsc:*)", "Bash(npx eslint:*)", "Bash(npx vitest:*)", "Bash(npx jscpd:*)", "Bash(npm audit:*)"
+    ],
+    "deny": [
+      "Edit(kb/product/**)", "Write(kb/product/**)",
+      "Edit(kb/status.md)", "Write(kb/status.md)",
+      "Edit(kb/manifest.md)", "Write(kb/manifest.md)",
+      "Edit(kb/questions/**)", "Write(kb/questions/**)",
+      "Edit(harness/**)", "Write(harness/**)",
+      "Edit(.claude/**)", "Write(.claude/**)", "Edit(.github/**)", "Write(.github/**)",
+      "Bash(git push:*)", "Bash(git merge:*)", "Bash(git checkout:*)", "Bash(git rebase:*)", "Bash(git reset:*)",
+      "WebFetch", "WebSearch"
+    ]
+  }
+}

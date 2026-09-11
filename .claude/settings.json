@@ -1,0 +1,28 @@
+{
+  "$comment": "Project hook bindings per SI §7 (hook-class controls). Merge-time controls (kb-same-PR, spec-write guard, manifest guard, identity check, pending-tag flip, regression fails-before) bind in CI; scope/identity checks also run inside the engine (enforcement modules, exercised by the self-attack).",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "node harness/scripts/hooks/locked-test-guard.mjs" },
+          { "type": "command", "command": "node harness/scripts/hooks/kb-budget-check.mjs" }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "sh harness/scripts/hooks/pre-commit-secrets.sh" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          { "type": "command", "command": "node harness/scripts/hooks/question-notify.mjs" }
+        ]
+      }
+    ]
+  }
+}

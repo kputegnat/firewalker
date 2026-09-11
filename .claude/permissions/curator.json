@@ -1,0 +1,22 @@
+{
+  "$comment": "Curator cage per SI §7a: reads everything durable; writes briefings, archive, manifest, triage/questions archival surfaces only. Commits are made by the script on its behalf.",
+  "permissions": {
+    "allow": [
+      "Read", "Grep", "Glob",
+      "Edit(kb/briefings/**)", "Write(kb/briefings/**)",
+      "Edit(kb/archive/**)", "Write(kb/archive/**)",
+      "Edit(kb/manifest.md)", "Write(kb/manifest.md)",
+      "Edit(kb/triage-queue.md)",
+      "Edit(kb/questions/**)",
+      "Bash(git diff:*)", "Bash(git log:*)"
+    ],
+    "deny": [
+      "Edit(app/**)", "Write(app/**)", "Edit(api/**)", "Write(api/**)",
+      "Edit(pipeline/**)", "Write(pipeline/**)", "Edit(shared/**)", "Write(shared/**)",
+      "Edit(infra/**)", "Write(infra/**)", "Edit(tests/**)", "Write(tests/**)",
+      "Edit(kb/product/**)", "Write(kb/product/**)", "Edit(kb/status.md)", "Write(kb/status.md)",
+      "Edit(harness/**)", "Write(harness/**)", "Edit(.claude/**)", "Write(.claude/**)",
+      "Bash(git push:*)", "Bash(git commit:*)", "WebFetch", "WebSearch"
+    ]
+  }
+}

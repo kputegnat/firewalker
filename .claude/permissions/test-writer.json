@@ -1,0 +1,17 @@
+{
+  "$comment": "Test-writer cage per SI §7a: reads task/contracts/conventions; writes test paths on tests/* branches only; runs the bound test runner. Commits and the locked-tests manifest are written by the script.",
+  "permissions": {
+    "allow": [
+      "Read", "Grep", "Glob",
+      "Edit(tests/**)", "Write(tests/**)",
+      "Bash(node harness/run-tests.mjs:*)", "Bash(git diff:*)", "Bash(git log:*)"
+    ],
+    "deny": [
+      "Edit(app/**)", "Write(app/**)", "Edit(api/**)", "Write(api/**)",
+      "Edit(pipeline/**)", "Write(pipeline/**)", "Edit(shared/**)", "Write(shared/**)",
+      "Edit(kb/**)", "Write(kb/**)", "Edit(harness/**)", "Write(harness/**)",
+      "Edit(.claude/**)", "Write(.claude/**)",
+      "Bash(git push:*)", "Bash(git commit:*)", "WebFetch", "WebSearch"
+    ]
+  }
+}

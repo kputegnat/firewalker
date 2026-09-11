@@ -1,0 +1,9 @@
+{
+  "$comment": "Gate 7 (copy-paste) config per gates-and-hooks.md: min-tokens 70, threshold 0, hard on NEW findings. Baseline: kb/archive/duplication-baseline.md (empty — greenfield).",
+  "minTokens": 70,
+  "threshold": 0,
+  "exitCode": 1,
+  "pattern": "{app,api,pipeline,shared}/src/**/*.{ts,tsx,js}",
+  "ignore": ["**/node_modules/**", "docs/**", "kb/**", "harness/**"],
+  "reporters": ["consoleFull"]
+}

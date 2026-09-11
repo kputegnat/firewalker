@@ -1,0 +1,6 @@
+{
+  "name": "@firewalker/pipeline",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module"
+}

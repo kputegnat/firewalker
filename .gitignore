@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+.jscpd-report/
+*.log
+!harness/state/notifications.log
+.env
+.env.*

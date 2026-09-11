@@ -1,0 +1,7 @@
+{
+  "$comment": "pr-reviewer / plan-reviewer / curator-as-gate-11 cage per SI §7a: read-only judgment. Verdict documents are written by the ENGINE from parsed output, never by the agent.",
+  "permissions": {
+    "allow": ["Read", "Grep", "Glob", "Bash(git diff:*)", "Bash(git log:*)"],
+    "deny": ["Edit", "Write", "Bash", "WebFetch", "WebSearch"]
+  }
+}

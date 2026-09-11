@@ -1,0 +1,54 @@
+{
+  "$comment": "Engine config (ADR-0001). ADR-gated commits only — never live edits. Width 0 = calibration: nothing dispatches. Gate 6 (sast): bound if semgrep present on the box, else left [] = skipped-with-trace pending infra install. Gates 8 (route-collision) and 9 (dead-exports): deferred until the API layer / package code exists — [] = skipped with trace by design.",
+  "width": 0,
+  "drainForSev1": true,
+  "testCommand": ["node", "harness/run-tests.mjs"],
+  "agentTimeouts": {
+    "worker": 2700000,
+    "conflict-resolver": 2700000,
+    "planner": 1800000,
+    "test-writer": 1800000,
+    "integration-checker": 1200000,
+    "plan-reviewer": 900000,
+    "pr-reviewer": 900000,
+    "curator": 900000,
+    "triage": 900000,
+    "diagnosis": 600000,
+    "signal": 600000
+  },
+  "breakers": {
+    "task": { "costUsd": 15 },
+    "epic": { "costUsd": 150 },
+    "daily": { "costUsd": 25 }
+  },
+  "gates": [
+    { "id": "1", "name": "lint+naming", "kind": "command", "command": ["sh", "harness/scripts/gate-1-lint-naming.sh"] },
+    { "id": "2", "name": "typecheck", "kind": "command", "command": ["npx", "tsc", "--noEmit", "-p", "tsconfig.json"] },
+    { "id": "3", "name": "tests", "kind": "tests" },
+    { "id": "4", "name": "secrets", "kind": "command", "command": ["node", "harness/scripts/secret-scan.mjs"] },
+    { "id": "5", "name": "dep-audit", "kind": "command", "command": ["npm", "audit", "--audit-level=high"] },
+    { "id": "6", "name": "sast", "kind": "command", "command": [] },
+    { "id": "7", "name": "copy-paste", "kind": "command", "command": ["npx", "jscpd", "--config", ".jscpd.json"] },
+    { "id": "8", "name": "route-collision", "kind": "command", "command": [] },
+    { "id": "9", "name": "dead-exports", "kind": "command", "command": [] },
+    { "id": "10", "name": "pr-review", "kind": "reviewer", "agentType": "pr-reviewer" },
+    { "id": "11", "name": "kb-verify", "kind": "reviewer", "agentType": "curator" }
+  ],
+  "agentCommands": {
+    "testWriter": ["sh", "harness/scripts/agents/test-writer.sh"],
+    "curator": ["sh", "harness/scripts/agents/curator.sh"],
+    "reviewer": ["sh", "harness/scripts/agents/reviewer.sh"],
+    "resolver": ["sh", "harness/scripts/agents/resolver.sh"],
+    "diagnosis": ["sh", "harness/scripts/agents/diagnosis.sh"],
+    "worker": ["sh", "harness/scripts/agents/worker.sh"]
+  },
+  "calibration": {
+    "enginePin": "v0.9.1",
+    "claudeCodePin": "2.1.236",
+    "dependencyRefresh": "weekly",
+    "triageSweep": "daily",
+    "questionAgeHours": { "digest": 24, "stale": 72 },
+    "kbChurnThresholdPct": 15,
+    "notification": "file-only (supervised era, ADR-0001)"
+  }
+}
