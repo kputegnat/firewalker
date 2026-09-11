@@ -1,7 +1,7 @@
 # Naming Grammar
 <!-- Satisfies: R10 -->
 <!-- Budget: 200 lines. Enforced by lint gate 1 (eslint naming-convention + check-file + harness/scripts/naming-check.mjs); semantic truth enforced by pr-reviewer. -->
-<!-- STATUS: PROPOSED — greenfield grammar (chosen, not inferred), derived from planning-doc conventions where stated (ADR-0003/0010/0014/0017, PRD R-002, PRD §Architecture conventions). Owner sign-off pending; becomes binding on acceptance. -->
+<!-- STATUS: ACCEPTED (owner sign-off 2026-09-11, Phase B close) — greenfield grammar (chosen, not inferred), derived from planning-doc conventions where stated (ADR-0003/0010/0014/0017, PRD R-002, PRD §Architecture conventions). BINDING. -->
 
 ## R1 — Files
 Pattern: `{entity}.{layer}.ts` → `capture-session.service.ts`, `capture-session.routes.ts`, `capture-session.repository.ts`
