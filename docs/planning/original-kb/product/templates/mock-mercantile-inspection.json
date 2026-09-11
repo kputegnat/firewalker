@@ -1,0 +1,83 @@
+{
+  "templateId": "mock-mercantile-v1",
+  "name": "Fire Inspection — Mercantile Occupancy (MOCK SEED)",
+  "version": 1,
+  "status": "mock",
+  "note": "Stand-in template authored pre-NDA for build/demo. Replaced by vendor-derived content at E07. Structure and lockability are representative; question set is plausible but not authoritative.",
+  "codeBasis": { "code": "IFC", "edition": "2021", "note": "mock citation basis" },
+  "sections": [
+    {
+      "sectionId": "arrival",
+      "title": "Arrival & premises",
+      "prompts": [
+        { "promptId": "arr-1", "text": "Confirm the business name and current occupancy use.", "answerType": "text", "required": true, "lockability": "org-may-reword", "mapping": "occupancy.use" },
+        { "promptId": "arr-2", "text": "Photograph the front of the premises including the address placard.", "answerType": "photo", "required": true, "lockability": "org-may-reword", "mapping": "premises.frontPhoto" },
+        { "promptId": "arr-3", "text": "Is the address clearly visible from the street?", "answerType": "selection", "options": ["Yes", "No"], "required": true, "lockability": "locked", "requiredBy": "IFC 505.1", "mapping": "premises.addressVisible" },
+        { "promptId": "arr-4", "text": "Does this occupancy include a commercial kitchen?", "answerType": "selection", "options": ["Yes", "No"], "required": true, "lockability": "locked", "requiredBy": "scoping question", "mapping": "occupancy.hasCommercialKitchen" }
+      ]
+    },
+    {
+      "sectionId": "egress",
+      "title": "Means of egress",
+      "prompts": [
+        { "promptId": "egr-1", "text": "Are all required exits unlocked, unobstructed, and openable without keys or special knowledge?", "answerType": "selection", "options": ["Yes", "No — describe"], "required": true, "lockability": "locked", "requiredBy": "IFC 1010", "mapping": "egress.exitsClear" },
+        { "promptId": "egr-2", "text": "Describe any egress obstructions observed and their locations.", "answerType": "voice", "required": false, "showIf": { "promptId": "egr-1", "equals": "No — describe" }, "lockability": "org-may-reword", "mapping": "egress.obstructionNotes" },
+        { "promptId": "egr-3", "text": "Photograph each exit door in its current condition.", "answerType": "photo", "required": true, "lockability": "org-may-disable", "mapping": "egress.exitPhotos" },
+        { "promptId": "egr-4", "text": "Are exit signs illuminated and emergency lights functional under test?", "answerType": "selection", "options": ["All functional", "Deficiencies — describe"], "required": true, "lockability": "locked", "requiredBy": "IFC 1013, 1008.3", "mapping": "egress.signsAndLighting" },
+        { "promptId": "egr-5", "text": "Note aisle widths in sales areas; record any aisle below required width.", "answerType": "voice", "required": true, "lockability": "org-may-disable", "mapping": "egress.aisleNotes" }
+      ]
+    },
+    {
+      "sectionId": "protection",
+      "title": "Fire protection systems",
+      "prompts": [
+        { "promptId": "pro-1", "text": "Record the sprinkler system status: control valves open and supervised?", "answerType": "selection", "options": ["Open/supervised", "Deficiency — describe", "No sprinkler system"], "required": true, "lockability": "locked", "requiredBy": "NFPA 25", "mapping": "protection.sprinklerStatus" },
+        { "promptId": "pro-2", "text": "Photograph the sprinkler riser and the most recent inspection tag.", "answerType": "photo", "required": true, "showIf": { "promptId": "pro-1", "notEquals": "No sprinkler system" }, "lockability": "locked", "requiredBy": "NFPA 25", "mapping": "protection.riserTagPhoto" },
+        { "promptId": "pro-3", "text": "State the date on the most recent sprinkler inspection tag and the servicing contractor.", "answerType": "voice", "required": true, "showIf": { "promptId": "pro-1", "notEquals": "No sprinkler system" }, "lockability": "locked", "requiredBy": "NFPA 25", "mapping": "protection.lastServiceRecord" },
+        { "promptId": "pro-4", "text": "Are portable extinguishers present, mounted, accessible, and tagged within 12 months?", "answerType": "selection", "options": ["Yes", "Deficiencies — describe"], "required": true, "lockability": "locked", "requiredBy": "NFPA 10", "mapping": "protection.extinguishers" },
+        { "promptId": "pro-5", "text": "Photograph a representative extinguisher tag.", "answerType": "photo", "required": false, "lockability": "org-may-disable", "mapping": "protection.extinguisherTagPhoto" },
+        { "promptId": "pro-6", "text": "Fire alarm control panel: normal condition, no troubles or supervisories?", "answerType": "selection", "options": ["Normal", "Trouble/supervisory — describe", "No alarm system"], "required": true, "lockability": "locked", "requiredBy": "NFPA 72", "mapping": "protection.facpStatus" },
+        { "promptId": "pro-7", "text": "Photograph the alarm panel display.", "answerType": "photo", "required": false, "showIf": { "promptId": "pro-6", "notEquals": "No alarm system" }, "lockability": "org-may-disable", "mapping": "protection.facpPhoto" }
+      ]
+    },
+    {
+      "sectionId": "electrical",
+      "title": "Electrical",
+      "prompts": [
+        { "promptId": "ele-1", "text": "Is 30 inches of clearance maintained in front of electrical panels?", "answerType": "selection", "options": ["Yes", "No — photograph"], "required": true, "lockability": "locked", "requiredBy": "IFC 605 / NEC 110.26", "mapping": "electrical.panelClearance" },
+        { "promptId": "ele-2", "text": "Photograph any blocked panel or open breaker/junction condition.", "answerType": "photo", "required": false, "showIf": { "promptId": "ele-1", "equals": "No — photograph" }, "lockability": "org-may-reword", "mapping": "electrical.deficiencyPhotos" },
+        { "promptId": "ele-3", "text": "Note any extension cords used as permanent wiring or daisy-chained power strips.", "answerType": "voice", "required": true, "lockability": "org-may-disable", "mapping": "electrical.cordNotes" }
+      ]
+    },
+    {
+      "sectionId": "storage",
+      "title": "Housekeeping & storage",
+      "prompts": [
+        { "promptId": "sto-1", "text": "Is storage maintained 18 inches below sprinkler deflectors (24 inches below ceiling if unsprinklered)?", "answerType": "selection", "options": ["Yes", "Violations — photograph"], "required": true, "lockability": "locked", "requiredBy": "IFC 315.3", "mapping": "storage.clearance" },
+        { "promptId": "sto-2", "text": "Photograph storage clearance violations.", "answerType": "photo", "required": false, "showIf": { "promptId": "sto-1", "equals": "Violations — photograph" }, "lockability": "org-may-reword", "mapping": "storage.violationPhotos" },
+        { "promptId": "sto-3", "text": "Describe general housekeeping in stockrooms and receiving, including combustible accumulation.", "answerType": "voice", "required": true, "lockability": "org-may-disable", "mapping": "storage.housekeepingNotes" },
+        { "promptId": "sto-4", "text": "Are compressed gas cylinders (if any) secured upright?", "answerType": "selection", "options": ["Yes", "No", "None on site"], "required": false, "lockability": "org-may-disable", "mapping": "storage.cylinders" }
+      ]
+    },
+    {
+      "sectionId": "kitchen",
+      "title": "Commercial kitchen",
+      "showIf": { "promptId": "arr-4", "equals": "Yes" },
+      "prompts": [
+        { "promptId": "kit-1", "text": "Hood suppression system: current service tag within 6 months?", "answerType": "selection", "options": ["Yes", "No/expired", "Not equipped"], "required": true, "lockability": "locked", "requiredBy": "NFPA 96 / NFPA 17A", "mapping": "kitchen.hoodSuppression" },
+        { "promptId": "kit-2", "text": "Photograph the hood suppression service tag.", "answerType": "photo", "required": true, "showIf": { "promptId": "kit-1", "notEquals": "Not equipped" }, "lockability": "locked", "requiredBy": "NFPA 96", "mapping": "kitchen.tagPhoto" },
+        { "promptId": "kit-3", "text": "Describe hood and duct grease accumulation and the posted cleaning schedule.", "answerType": "voice", "required": true, "lockability": "org-may-reword", "mapping": "kitchen.greaseNotes" },
+        { "promptId": "kit-4", "text": "Is a Class K extinguisher present within 30 feet of the cooking appliances?", "answerType": "selection", "options": ["Yes", "No"], "required": true, "lockability": "locked", "requiredBy": "NFPA 10 5.5.5", "mapping": "kitchen.classK" }
+      ]
+    },
+    {
+      "sectionId": "closing",
+      "title": "Closing",
+      "prompts": [
+        { "promptId": "clo-1", "text": "Summarize overall conditions and any verbal guidance given to the occupant.", "answerType": "voice", "required": true, "lockability": "org-may-reword", "mapping": "closing.summary" },
+        { "promptId": "clo-2", "text": "Record the name and role of the person contacted on site.", "answerType": "text", "required": true, "lockability": "org-may-disable", "mapping": "closing.contact" },
+        { "promptId": "clo-3", "text": "Is a re-inspection required?", "answerType": "selection", "options": ["No", "Yes — note timeframe"], "required": true, "lockability": "locked", "requiredBy": "department SOP (mock)", "mapping": "closing.reinspection" }
+      ]
+    }
+  ]
+}
