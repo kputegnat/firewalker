@@ -1,5 +1,5 @@
 {
-  "$comment": "Engine config (ADR-0001). ADR-gated commits only — never live edits. Width 0 = calibration: nothing dispatches. Gate 6 (sast): bound if semgrep present on the box, else left [] = skipped-with-trace pending infra install. Gates 8 (route-collision) and 9 (dead-exports): deferred until the API layer / package code exists — [] = skipped with trace by design.",
+  "$comment": "Engine config (ADR-0001). ADR-gated commits only — never live edits. Width 0 = calibration: nothing dispatches. Gate 6 (sast): semgrep 1.177.0 (pipx, box-local absolute path) with p/default + p/typescript — p/typescript alone fires on no injection plant (verified 2026-09-11); p/default detects the self-attack eval plant. Gates 8 (route-collision) and 9 (dead-exports): deferred until the API layer / package code exists — [] = skipped with trace by design.",
   "width": 0,
   "drainForSev1": true,
   "testCommand": ["node", "harness/run-tests.mjs"],
@@ -27,7 +27,7 @@
     { "id": "3", "name": "tests", "kind": "tests" },
     { "id": "4", "name": "secrets", "kind": "command", "command": ["node", "harness/scripts/secret-scan.mjs"] },
     { "id": "5", "name": "dep-audit", "kind": "command", "command": ["npm", "audit", "--audit-level=high"] },
-    { "id": "6", "name": "sast", "kind": "command", "command": [] },
+    { "id": "6", "name": "sast", "kind": "command", "command": ["/home/engine/.local/bin/semgrep", "scan", "--config", "p/default", "--config", "p/typescript", "--error", "--quiet"] },
     { "id": "7", "name": "copy-paste", "kind": "command", "command": ["npx", "jscpd", "--config", ".jscpd.json"] },
     { "id": "8", "name": "route-collision", "kind": "command", "command": [] },
     { "id": "9", "name": "dead-exports", "kind": "command", "command": [] },

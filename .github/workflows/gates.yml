@@ -11,9 +11,9 @@ jobs:
   mechanical-gates:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: { node-version: 24 }
       - run: npm ci
       - name: gate 1 — lint + naming
@@ -28,14 +28,17 @@ jobs:
         run: npm audit --audit-level=high
       - name: gate 7 — copy-paste (jscpd)
         run: npx jscpd --config .jscpd.json
-      # gate 6 (sast/semgrep): pending toolchain decision — see harness/config.json note
+      - name: gate 6 — sast (semgrep p/default + p/typescript)
+        run: |
+          pipx install semgrep
+          semgrep scan --config p/default --config p/typescript --error --quiet
       # gate 8 (route-collision): deferred until the API layer exists
       # gate 9 (dead-exports): soft; binds with knip once packages have real exports
   orchestrator-surface-identity:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with: { fetch-depth: 0 }
       - name: status/matrix commits carry the machine identity (SI §7)
         run: |

@@ -19,8 +19,9 @@ if (files.length === 0) {
 files = files.map((f) => f.replaceAll('\\', '/')).filter((f) => !excludes.includes(f));
 
 for (const f of files) {
+  // vitest invoked via its JS entry — cross-platform, no shell (gate 6: spawn-shell-true)
   const r = f.endsWith('.ts')
-    ? spawnSync('npx', ['vitest', 'run', f], { encoding: 'utf8', shell: process.platform === 'win32' })
+    ? spawnSync(process.execPath, ['node_modules/vitest/vitest.mjs', 'run', f], { encoding: 'utf8' })
     : spawnSync(process.execPath, [f], { encoding: 'utf8' });
   if (r.status !== 0) {
     process.stderr.write(`FAIL ${f}\n${r.stderr || ''}${r.stdout || ''}`);
