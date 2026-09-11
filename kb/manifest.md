@@ -3,7 +3,7 @@
 <!-- Budget: 150 lines. Owner: curator (only agent that edits this file). Regenerated each janitor pass. -->
 <!-- Rule: every /kb file has exactly one row; every topic has exactly one owner file. New /kb files without a row are hook-blocked. -->
 
-Last regenerated: 2026-09-11 | Files: 20 | Over-budget: 0 | Stale (>30d): 0
+Last regenerated: 2026-09-11 | Files: 21 | Over-budget: 0 | Stale (>30d): 0
 
 ## Durable truth
 | Path | Owns (topic) | Budget | Last verified |
@@ -21,6 +21,7 @@ Last regenerated: 2026-09-11 | Files: 20 | Over-budget: 0 | Stale (>30d): 0
 | /kb/runbooks/pipeline.md | How work flows (pointer to engine runbooks) | 100 | 2026-09-11 |
 | /kb/runbooks/infrastructure.md | Deploy targets, caps, rollback | 200 | 2026-09-11 |
 | /kb/product/readiness-record-E01.md | E01 readiness punch list (front-door P4 draft) | 100 | 2026-09-11 |
+| /kb/architecture/design-contract-e01.md | E01 UI contract: tokens, components, interaction rules | 200 | 2026-09-11 |
 
 ## Decisions (ADRs)
 | ID | Title | Status |
@@ -42,6 +43,7 @@ Last regenerated: 2026-09-11 | Files: 20 | Over-budget: 0 | Stale (>30d): 0
 | ADR-0015 | Deploy adapter — GH Actions builds; box never builds or signs | Accepted |
 | ADR-0016 | Engine box and vendor AWS stay credential-separated | Accepted |
 | ADR-0017 | Evidence integrity — checksums, immutable originals, Object Lock | Accepted |
+| ADR-0018 | Field-conditions design contract — tokens + field-kit over UI kit | Accepted |
 
 ## Working state
 /kb/status.md (orchestrator-owned) · /kb/product/traceability.md (orchestrator-owned) · /kb/questions/ (queue) · /kb/briefings/ (live; archived after consumption) · /kb/triage-queue.md (resolved entries archived) · /kb/product/plans/ (active = any matrix row of its epic not yet done) · /kb/product/plans/bugs/ (triage intake) · /kb/product/validation-records/ (owner sign-offs)
