@@ -3,34 +3,42 @@
 <!-- Matrix seeded from these rows (all `unplanned`). Task refs assigned by the planner at dissection. -->
 
 ## E01 — Offline capture spine (epic one; demo slice core)
+<!-- AC channels (Phase C front door, owner-accepted 2026-09-11): [CI] = locked test at mocked-plugin logic level on Linux runners; [device] = named DV-entry in kb/product/validation-records/e01-device-checklist.md, checked at milestone validation. Emulator smoke runs once per epic pre-milestone, non-blocking. -->
 - R-001 WorkflowTemplate schema (zod, /shared): sections → prompts → answer types (voice|photo|selection|text; `video` reserved, capture deferred) → required flags → conditional show-if → data-model mappings → lockability metadata (org-may-disable | org-may-reword | locked, required_by) [PDD §6.1, §8.3]
-  - AC: schema compiles strict; R-003 template validates; three invalid fixtures (missing required flag, dangling mapping ref, unknown answer type) each rejected with a named error.
+  - AC [CI]: schema compiles strict; R-003 template validates; three invalid fixtures (missing required flag, dangling mapping ref, unknown answer type) each rejected with an error naming the offending path.
 - R-002 CaptureOp schema (zod, /shared): op UUID, session ref, prompt ref, op type (past-tense namespaced), device timestamp, payload ref + SHA-256 [PDD §8.3, §7]
-  - AC: schema compiles; round-trips JSONL serialize/parse; rejects missing checksum on media ops.
+  - AC [CI]: schema compiles; ops round-trip JSONL serialize→parse deep-equal; rejects missing checksum on media ops.
 - R-003 Mock mercantile inspection template as seed data: ≥25 prompts, ≥1 conditional branch, ≥1 locked question carrying required_by [PDD §6.1; stand-in until E07]
-  - AC: validates against R-001; drives R-005 renderer end to end without code changes.
+  - AC [CI]: validates against R-001; R-005's CI walk consumes it solely as loader input — no template-specific code paths (pr-review enforced).
 - R-004 Session start pins template version and embeds full question snapshot into the session record [PDD §6.2]
-  - AC: session record contains verbatim prompt text/order/mappings; later template edits leave existing session snapshot byte-identical.
-- R-005 Prompt-by-prompt renderer walking any valid template; answer capture per type; touch targets ≥44pt [PDD §5.2]
-  - AC: completes R-003 template on device; conditional branch shows/hides per prior answer.
+  - AC [CI]: session record contains verbatim prompt text/order/mappings; later template edits leave existing session snapshot byte-identical.
+- R-005 Prompt-by-prompt renderer walking any valid template; answer capture per type; touch targets ≥44pt hard floor (design defaults per ADR-0018) [PDD §5.2]
+  - AC [CI]: renderer walks the full R-003 template in the web test env — every answer type renders; conditional branch shows/hides per prior answer; touch-target and type floors assert ADR-0018 tokens (≥48px targets, ≥18px body).
+  - AC [device]: full template completion on physical iOS and Android; glove operation (DV-1, DV-2).
 - R-006 Voice notes bound to the prompt being answered; native recording survives screen lock and backgrounding [PDD §5.2, §8.2]
-  - AC: 60s recording with mid-recording screen lock yields one complete op bound to the correct prompt.
+  - AC [CI]: mocked native recorder — simulated 60s recording with mid-recording lock/background event yields exactly one complete op bound to the correct prompt.
+  - AC [device]: real 60s recording with actual screen lock; audio playable (DV-5).
 - R-007 Photo capture bound to prompt with device timestamp, GPS, compass heading in metadata [PDD §5.2]
-  - AC: captured photo op carries all three metadata fields; metadata survives client compression.
+  - AC [CI]: op schema rejects any of the three metadata fields missing; compression at the app-default quality preserves all three EXIF fields on a fixture image.
+  - AC [device]: real capture carries real timestamp, GPS, and compass values (DV-6).
 - R-008 Local-first persistence: every op + blob written to native filesystem and local op log before any network use; full session completable in airplane mode [PDD §8.4]
-  - AC: entire R-003 template completed in airplane mode; all ops present and valid on disk.
+  - AC [CI]: with the network layer mocked off, the full R-003 template completes; every op + blob present and valid on the filesystem abstraction before any network use; zero network calls asserted.
+  - AC [device]: entire template completed in airplane mode on hardware; all ops valid on disk (DV-7).
 - R-009 Crash safety: app force-kill and relaunch mid-session loses zero completed ops; an interrupted blob write never yields a valid op [PDD §8.4]
-  - AC: kill after op N → relaunch shows N ops, session resumable at prompt N+1; interrupted-write fixture yields absent-or-incomplete op, never valid-op-with-corrupt-blob.
+  - AC [CI]: interrupted-write fixture yields absent-or-incomplete op, never valid-op-with-corrupt-blob; write order (blob → fsync → op commit) asserted; op-log replay after simulated process death reconstructs N ops with session resumable at prompt N+1.
+  - AC [device]: real force-kill mid-session; relaunch shows N ops, resumable at prompt N+1 (DV-8).
 - R-010 Live completeness meter: required captured vs outstanding, updated per op [PDD §5.2]
-  - AC: meter matches a hand-count at three checkpoints in the R-003 run; reaches complete only when all required answered or skip-documented.
+  - AC [CI]: meter equals fixture-precomputed required-captured/outstanding counts at three named checkpoints of a scripted R-003 walk; reaches complete only when all required answered or skip-documented.
 - R-011 Skip-with-reason on required items: skip requires a documented reason, recorded as an op [PDD §5.2]
-  - AC: skip without reason impossible in UI; skip op carries reason text and prompt ref.
+  - AC [CI]: skip submission with empty reason rejected at component level AND a skip op lacking reason text rejected by schema; skip op carries reason text and prompt ref.
 - R-012 Free-form observations lane available at any point, captured as prompt-unbound ops [PDD §5.2]
-  - AC: observation recorded mid-template appears as a valid prompt-unbound op in the log; completeness meter unaffected by its presence.
+  - AC [CI]: observation recorded mid-template appears as a valid prompt-unbound op in the log; completeness meter unaffected by its presence.
 - R-014 Photo annotation and tagging: markup plus tags ("violation", "area of origin") on captured photos, stored as ops; original photo never modified [PDD §5.2, §7]
-  - AC: annotated photo yields annotation op referencing the photo op; original blob checksum unchanged.
-- R-013 Assignment intake (manual entry for demo) + GPS verification: match → silent verified state; mismatch → confirm-or-update prompt; raw coordinates always logged regardless of source [PDD §5.1]
-  - AC: mismatch fixture (assignment ≠ mocked GPS) triggers the prompt; both resolutions recorded; coords present on session record in all paths.
+  - AC [CI]: annotated photo yields annotation op referencing the photo op; original blob checksum unchanged (fixture image).
+  - AC [device]: annotate a real capture with gloves; original blob intact (DV-10).
+- R-013 Assignment intake (manual entry for demo) + GPS verification: match (within configured radius, default 100m, config-tunable) → silent verified state; mismatch → confirm-or-update prompt; raw coordinates always logged regardless of source [PDD §5.1]
+  - AC [CI]: with mocked coordinates, distance beyond the configured tolerance triggers confirm-or-update; both resolutions recorded; raw coords present on the session record in all paths (match, confirm, update).
+  - AC [device]: real GPS acquisition on-site; verify/mismatch behavior and acquisition-timeout handling (DV-9).
 
 ## E02 — Sync & ingestion
 - R-020 Idempotent batch op ingestion (POST /v1/sessions/:id/ops): dedupe by op UUID; same batch delivered twice → identical DB state; per-op receipt statuses [PDD §8.4]
