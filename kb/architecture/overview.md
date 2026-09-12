@@ -19,5 +19,12 @@ TS monorepo: `/app` (React/Vite in Capacitor shell — ADR-0002) · `/api` (Fast
 3. AI review (E03/E04): transcription w/ confidence → extraction to template mappings → uncertainty/gap/contradiction flags (ADR-0008) → review screen with source-audio playback → conversational editing → approval.
 4. Delivery (E05): mapping layer → vendor submission lifecycle → evidence package export.
 
+## E01 seam contracts (wave 0)
+The four interface classes E01 work fans out against; each is a named contract task before dependent work dispatches:
+1. **WorkflowTemplate schema** (/shared, R-001) — see data-model.md.
+2. **CaptureOp schema** (/shared, R-002) — see data-model.md.
+3. **Local storage layout** — on-device evidence + op-log layout: blob paths, append-only op-log file-per-session, write ordering (blob → fsync → op commit, per R-009 [CI]). Owned by a wave-0 contract task; PDD §8.4 is the intent source.
+4. **Renderer ↔ storage interface** — the capture API surface the prompt renderer calls (append op, read session state, completeness projection); storage layer fulfills it; ops never mutate (ADR-0003).
+
 ## Current state
 No production code. Package skeletons only (`{app,api,pipeline,shared}/src/index.ts` placeholders). First real code arrives with E01 planning + dispatch.

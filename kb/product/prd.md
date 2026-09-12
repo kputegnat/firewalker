@@ -1,6 +1,6 @@
 # PRD — Field Capture Platform (Fire Inspection & Investigation)
 <!-- Front-door P2 artifact. Budget: 500 lines. -->
-<!-- PDD disposition (owner, Phase C, 2026-09-12): [PDD §x] citations are non-resolvable intent-lineage markers — /docs/product-design.md was never authored. Binding rationale lives in accepted ADRs (kb/decisions/); E01 UI intent in ADR-0018 + kb/architecture/design-contract-e01.md. Agents treat PDD citations as context, never blockers. -->
+<!-- PDD disposition (owner, Phase C, 2026-09-12 — supersedes the earlier "never authored" note): the PDD exists at /docs/product-design.md (v0.1 draft); [PDD §x] citations resolve against it. Precedence: this PRD + accepted ADRs govern wherever they differ from the PDD (e.g., R-081 vendor-brokered SSO supersedes PDD §8.8 Entra-first; ADR-0018 quantifies §5.2). PDD is rationale/context, never a blocker. -->
 <!-- Matrix seeded from these rows (all `unplanned`). Task refs assigned by the planner at dissection. -->
 
 ## E01 — Offline capture spine (epic one; demo slice core)
