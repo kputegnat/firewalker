@@ -1,5 +1,6 @@
 # PRD — Field Capture Platform (Fire Inspection & Investigation)
-<!-- Front-door P2 artifact. Source of intent: /docs/product-design.md (PDD) — rationale lives there; each requirement cites its section. Budget: 500 lines. -->
+<!-- Front-door P2 artifact. Budget: 500 lines. -->
+<!-- PDD disposition (owner, Phase C, 2026-09-12): [PDD §x] citations are non-resolvable intent-lineage markers — /docs/product-design.md was never authored. Binding rationale lives in accepted ADRs (kb/decisions/); E01 UI intent in ADR-0018 + kb/architecture/design-contract-e01.md. Agents treat PDD citations as context, never blockers. -->
 <!-- Matrix seeded from these rows (all `unplanned`). Task refs assigned by the planner at dissection. -->
 
 ## E01 — Offline capture spine (epic one; demo slice core)
@@ -72,6 +73,7 @@
 - R-053 Assignment intake pulled from the report system via the mapping layer (mock source until E07 binds the vendor) [PDD §5.1, §8.7]
 
 ## E06 — Template management platform (post-demo)
+<!-- Scope notes (owner, Phase C, 2026-09-12): initial template operations are platform-admin-driven, not fire-client self-service — org-facing surfaces (R-061/R-062/R-064) size accordingly; R-063 (agent-assisted editing) is explicitly last-priority within the epic. -->
 - R-060 Template versioning: published versions immutable; new version per change [PDD §6.2]
 - R-061 Org overrides layered on platform base; base updates propagate where non-conflicting; conflicts surface for resolution [PDD §6.3]
 - R-062 Lockability enforcement surfaced in domain language (never schema/field vocabulary at org tier) [PDD §6.3, §4-P4]
@@ -86,8 +88,8 @@
 
 ## E08 — Identity & tenancy
 - R-080 Multi-tenant isolation platform → vendor → org → user in the data model from first migration (org_id on every tenant-owned table) [PDD §8.8]
-- R-081 SSO (Microsoft Entra first) with email-based org discovery at login [PDD §8.8]
-- R-082 Token expiry while offline never blocks capture; re-auth on reconnect without loss [PDD §7]
+- R-081 Field-user auth via vendor-brokered SSO: the vendor build's IdP endpoint is per-vendor config (ADR-0012); vendor auth handles org-level SSO federation behind it; Entra-direct retained for platform-tier logins and as fallback for vendors without brokered SSO; protocol/token specifics pinned by ADR at E08 readiness (NDA-gated) [owner decision Phase C 2026-09-12, supersedes Entra-first; PDD §8.8]
+- R-082 Offline never blocks capture: app opens and captures with cached identity regardless of token expiry or connectivity; re-auth on reconnect without data loss — sync waits, capture never does [sharpened Phase C 2026-09-12; PDD §7]
 - R-083 Role model enforced across the three tiers (field user / org admin / platform admin) [PDD §3, §5.6]
 
 ## E09 — Evidence & ops hardening
