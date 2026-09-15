@@ -1,6 +1,7 @@
 # Canonical Surfaces Registry
 <!-- Budget: 300 lines. Owner file for the paved-road registry: one canonical surface per cross-cutting concern, the lint denial that enforces it, and the exception register. -->
-<!-- STATUS: PROPOSED (owner approval pending) — binding on acceptance per ADR-0019. Seeded from planned architecture; surfaces flip from PLANNED to LIVE as their package gains code. -->
+<!-- STATUS: ACCEPTED (owner, 2026-09-15) — BINDING per ADR-0019. Seeded from planned architecture; surfaces flip from PLANNED to LIVE as their package gains code. -->
+<!-- Governance: changes to this file — new surfaces, altered denials, exception rows — land only with owner approval (owner merge = approval). No agent self-grants. -->
 <!-- Rule: a cross-cutting concern present in the codemap with no row here is a curator finding. Adding a surface is cheap; removing a lint denial requires a superseding ADR. -->
 
 ## The registry
@@ -82,3 +83,16 @@ ESLint flat config, scoped by `files`/`ignores` so each canonical module is exem
 2. **Suppression coverage** — every `eslint-disable*` of a `no-restricted-*` rule carries a pragma on the same or preceding line.
 3. **CSS Modules scan** — raw hex/rgb/px literals in `app/src/**/*.module.css` (CS-12); ESLint does not parse CSS.
 4. **Registry drift** — each module path named above exists exactly once, and no second module declares the same concern.
+
+## Appendix — self-attack fixtures (bind with the gate, not after)
+The paved-road machinery is fixture-tested like every other gate (ADR-0019). Each fixture plants a defect, asserts gate 1 **fails with the named rule**, then reverts and asserts the suite is **clean**. A fixture that does not fire is itself a gate failure — silent enforcement is the failure mode this whole mandate exists to prevent.
+
+| ID | Planted defect | Must fire | Failing check | Expected message contains |
+|---|---|---|---|---|
+| SA-PR-1 | Bare `fetch('/v1/ping')` added to an `/app/src` file outside `app/src/api/client.ts` | gate 1 | ESLint `no-restricted-globals` | `CS-5: use /app/src/api/client.ts` |
+| SA-PR-2 | `// paved-road-exception: CS-EX-999 — testing` above any deviating line, with no `CS-EX-999` row in the registry | gate 1 | `paved-road-check.mjs` (pragma validation) | unknown exception id `CS-EX-999` |
+| SA-PR-3 | `// eslint-disable-next-line no-restricted-globals` above a `localStorage.setItem(...)` call, with no pragma on or above it | gate 1 | `paved-road-check.mjs` (suppression coverage) | suppression of a restricted rule without a cited exception |
+
+Runner contract, per fixture: plant → run the gate suite → assert non-zero exit **and** the expected message → `git checkout --` the planted file → re-run → assert clean exit. SA-PR-3 is the load-bearing one: without it the entire mandate is one `eslint-disable` comment away from bypass.
+
+Extension rule: **every new registry row ships with a fixture that proves its denial fires.** A surface whose lint rule has never been observed failing is unverified, not enforced.
