@@ -3,7 +3,7 @@
 <!-- Budget: 150 lines. Owner: curator (only agent that edits this file). Regenerated each janitor pass. -->
 <!-- Rule: every /kb file has exactly one row; every topic has exactly one owner file. New /kb files without a row are hook-blocked. -->
 
-Last regenerated: 2026-09-17 | Files: 23 | Over-budget: 0 | Stale (>30d): 0
+Last regenerated: 2026-09-17 | Files: 24 | Over-budget: 0 | Stale (>30d): 0
 
 ## Durable truth
 | Path | Owns (topic) | Budget | Last verified |
@@ -19,6 +19,7 @@ Last regenerated: 2026-09-17 | Files: 23 | Over-budget: 0 | Stale (>30d): 0
 | /kb/codemap/data-access.md | Query/repository inventory | 400 | 2026-09-11 |
 | /kb/product/prd.md | Full-product requirements (CONTEXT; not current scope) | 500 | 2026-09-17 |
 | /kb/product/prototype-prd.md | THE CURRENT BUILD: prototype requirements R-100..R-123 | 300 | 2026-09-17 |
+| /kb/product/prototype-flow.md | Prototype screens, states, transitions, copy | 250 | 2026-09-17 |
 | /kb/product/traceability.md | Requirement→story→test ledger | — (working) | — |
 | /kb/runbooks/pipeline.md | How work flows (pointer to engine runbooks) | 100 | 2026-09-11 |
 | /kb/runbooks/infrastructure.md | Deploy targets, caps, rollback | 200 | 2026-09-11 |
