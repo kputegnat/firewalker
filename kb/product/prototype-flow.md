@@ -4,8 +4,9 @@
 <!-- Written as state machines, not prose: every screen lists its states, what shows in each, and what transitions out. Agents build UI far better from this than from description. -->
 
 ## The loop in one line
-Case start → **[ prompt → prompt → … → section end → extract → review → confirm ]** per section → export.
-Blazestack's six steps map onto it: prompt (SCR-2) → capture (SCR-2) → extract (SCR-4) → review (SCR-5) → confirm/correct (SCR-5/6) → save and advance (SCR-7).
+Case start → **[ shoot and talk → shoot and talk → … → section end → derive → review what the AI produced → correct → confirm ]** per section → export.
+
+The investigator never fills a form during capture. They photograph and narrate; fields appear afterwards, already proposed. Blazestack's six steps map on: prompt (SCR-2) → capture (SCR-2) → extract (SCR-4) → review (SCR-5) → confirm/correct (SCR-5/6) → save and advance (SCR-7).
 
 ## Global chrome (every screen except SCR-1)
 - **Top bar:** back chevron · section name ("Electrical Supply") · upload-state dot (CS-12 sync tokens: queued / uploading / safe — icon + label, never colour alone).
@@ -28,30 +29,26 @@ Note: coordinates are logged silently at start (R-013 disposition — log, never
 
 ---
 
-## SCR-2 — Prompt (the screen the investigator lives on)
-**Purpose:** ask one field, capture one answer. **Ops:** `capture.{voice-note|photo|selection|text}.recorded`, `capture.field.marked-unknown`.
+## SCR-2 — Capture prompt (the screen the investigator lives on)
+**Purpose:** gather the photographs and narration that the section's fields will be derived from. **This screen never shows a form.** No dropdowns, no field labels, no option lists — those belong to review (SCR-5), after the AI has had its attempt. **Ops:** `capture.photo.recorded`, `capture.voice-note.recorded`, `capture.prompt.marked-unavailable`.
 
-**Layout top to bottom:** prompt text (`type.prompt`, 22px) · answer control (by type) · "Unknown / unavailable" secondary action · primary advance.
+**Layout top to bottom:** capture prompt (`type.prompt`, 22px — *"Photograph the electrical service where it enters the structure"*) · one line of why it matters · **camera and microphone side by side, 64px each, equal weight** · captured-evidence strip (thumbnails and waveforms) · "Not available here" secondary · "Next" primary.
 
-### Answer-type variants
-| Type | Control | Advance behaviour |
-|---|---|---|
-| `selection` | Full-width tap rows, one per option | **auto-advance on tap** |
-| `voice` | Big record button (64px), elapsed timer, live level meter | manual "Next" after stop |
-| `photo` | Shutter button → camera → thumbnail strip (max 10) | manual "Next"; "Add another" stays available |
-| `text` | Field + keyboard, mic icon for dictation | manual "Next" |
+The two capture actions are the screen. Everything else is subordinate to them.
 
 ### States
 | State | Shows | Exit |
 |---|---|---|
-| `unanswered` | Control idle; "Next" disabled if required | answer → `answered` · unknown → `resolved` |
-| `recording` | Timer counting, level meter, button becomes Stop. **Only exit is Stop** — no navigation while recording | stop → `answered` |
-| `answered` | Captured evidence shown (waveform / thumbnail / chosen option); "Next" enabled; answer replaceable | Next → next prompt, or section end → SCR-4 |
-| `resolved` | "Marked unknown" chip with undo | Next → advance |
+| `empty` | Both capture actions prominent; evidence strip absent; "Next" disabled while the prompt is required | photo → `captured` · record → `recording` · unavailable → `resolved` |
+| `recording` | Elapsed timer, live level meter, button becomes Stop. **Only exit is Stop** — no navigation mid-recording | stop → `captured` |
+| `captured` | Evidence strip with every photo and recording so far; both capture actions remain available for more; "Next" enabled | more → stays here · Next → next prompt, or section end → SCR-4 |
+| `resolved` | "Marked unavailable" chip with undo | Next → advance |
 
-Rules: no long-press, no swipe-only, no hover (ADR-0018). Recording survives pocketing only in the native build — browser prototype stops on tab background, and that limit is recorded in ADR-0020, not hidden from the user.
+**Multiple captures per prompt are normal, not exceptional** — a panel might warrant three photographs and forty seconds of narration, and one capture may populate several fields (R-100's many-to-many).
 
-Copy: secondary action "Unknown or unavailable" (their language, R-111); primary "Next".
+Rules: no long-press, no swipe-only, no hover (ADR-0018). Browser recording stops when the tab backgrounds — a limit recorded in ADR-0020 and surfaced to the user, not hidden.
+
+Copy: secondary "Not available here" (R-110); primary "Next".
 
 ---
 
@@ -66,12 +63,12 @@ Each instance carries the full field set independently; instance index rides on 
 
 ---
 
-## SCR-4 — Extracting
-**Purpose:** the honest waiting state while transcription + extraction run (R-114/R-115). **Ops:** none.
+## SCR-4 — Deriving
+**Purpose:** the honest waiting state while transcription, visual derivation, and narrative derivation run (R-113/R-114/R-115). **Ops:** none.
 
 | State | Shows | Exit |
 |---|---|---|
-| `working` | Section name, "Reading your answers…", per-item ticks as each voice note transcribes | all done → SCR-5 |
+| `working` | Section name, "Reading your photos and notes…", per-item ticks as each photograph and recording is processed | all done → SCR-5 |
 | `slow` (>15s) | Adds "Still working — you can keep capturing" + link to next section | user leaves → capture continues, review queued |
 | `failed` | "Couldn't process 2 of 6 answers" + Retry; **captured evidence is never lost** | retry → `working` · skip → SCR-5 with those fields unpopulated and flagged |
 
@@ -82,7 +79,9 @@ The `slow` path exists because blocking an investigator on a model call is the f
 ## SCR-5 — Section review
 **Purpose:** show what the AI proposes, with its evidence (R-120). **Ops:** `review.value.confirmed`, `review.value.rejected`.
 
-Row per field: field label · proposed value · flag chip if any · ▸ play source audio.
+**This is the first screen where fields appear at all.** Row per target field: field label · derived value · provenance chip (📷 photo / 🎙 audio / ✋ manual) · flag chip if any. Tapping the provenance chip opens the source photograph or plays the source audio segment (R-116).
+
+A field the AI could not derive shows as an empty row with "Add manually" — the fallback path, visibly the exception rather than the norm.
 
 | Flag | Meaning | Rendering |
 |---|---|---|
