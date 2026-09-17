@@ -3,7 +3,7 @@
 <!-- Budget: 150 lines. Owner: curator (only agent that edits this file). Regenerated each janitor pass. -->
 <!-- Rule: every /kb file has exactly one row; every topic has exactly one owner file. New /kb files without a row are hook-blocked. -->
 
-Last regenerated: 2026-09-15 | Files: 22 | Over-budget: 0 | Stale (>30d): 0
+Last regenerated: 2026-09-17 | Files: 24 | Over-budget: 0 | Stale (>30d): 0
 
 ## Durable truth
 | Path | Owns (topic) | Budget | Last verified |
@@ -17,7 +17,9 @@ Last regenerated: 2026-09-15 | Files: 22 | Over-budget: 0 | Stale (>30d): 0
 | /kb/codemap/api-routes.md | Route inventory | 400 | 2026-09-11 |
 | /kb/codemap/services.md | Service/module inventory | 400 | 2026-09-11 |
 | /kb/codemap/data-access.md | Query/repository inventory | 400 | 2026-09-11 |
-| /kb/product/prd.md | Requirements (the spec) | 500 | 2026-09-11 |
+| /kb/product/prd.md | Full-product requirements (CONTEXT; not current scope) | 500 | 2026-09-17 |
+| /kb/product/prototype-prd.md | THE CURRENT BUILD: prototype requirements R-100..R-135 | 300 | 2026-09-17 |
+| /kb/product/prototype-flow.md | Prototype screens, states, transitions, copy | 250 | 2026-09-17 |
 | /kb/product/traceability.md | Requirement→story→test ledger | — (working) | — |
 | /kb/runbooks/pipeline.md | How work flows (pointer to engine runbooks) | 100 | 2026-09-11 |
 | /kb/runbooks/infrastructure.md | Deploy targets, caps, rollback | 200 | 2026-09-11 |
@@ -46,6 +48,7 @@ Last regenerated: 2026-09-15 | Files: 22 | Over-budget: 0 | Stale (>30d): 0
 | ADR-0017 | Evidence integrity — checksums, immutable originals, Object Lock | Accepted |
 | ADR-0018 | Field-conditions design contract — tokens + field-kit over UI kit | Accepted |
 | ADR-0019 | Canonical surfaces and the paved-road mandate | Accepted |
+| ADR-0020 | Browser-first prototype; native shell binds at pilot | PROPOSED |
 
 ## Working state
 /kb/status.md (orchestrator-owned) · /kb/product/traceability.md (orchestrator-owned) · /kb/questions/ (queue) · /kb/briefings/ (live; archived after consumption) · /kb/triage-queue.md (resolved entries archived) · /kb/product/plans/ (active = any matrix row of its epic not yet done) · /kb/product/plans/bugs/ (triage intake) · /kb/product/validation-records/ (owner sign-offs)

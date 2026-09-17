@@ -1,0 +1,15 @@
+# ADR-0020: Browser-first prototype; native shell binds at pilot
+Status: PROPOSED (owner approval pending)   Date: 2026-09-17   Supersedes: none (amends ADR-0002 for the prototype phase only)   Decided by: human (Phase C working session)
+## Context
+ADR-0002 chose a Capacitor-wrapped client and said native from day one, because iOS browsers evict stored evidence, stop background upload, and kill recording on screen lock. That reasoning is unchanged **for evidence capture at pilot**. It does not apply to a prototype whose purpose is feedback on the capture-and-extract loop, whose captures are disposable, and whose client is the same React/Vite code either way — Capacitor wraps a web app, so browser and native are two delivery targets of one codebase, not a fork. Blazestack's own product is a responsive web app with no native client, so a browser prototype also matches how their users already work.
+## Decision
+The prototype ships to the **browser**. The Capacitor shell binds at pilot, not now. On-device storage is built as an **adapter** (CS-1) with a browser implementation behind the same interface the native implementation will use, so the switch is a configuration change rather than a rewrite.
+
+**ADR bindings for the prototype phase:**
+- **Binding, unchanged:** ADR-0003 (append-only op log), ADR-0005/0006 (question snapshot, version pinning), ADR-0007 (staged replayable pipeline), ADR-0008 (flag uncertainty), ADR-0010 (anti-corruption mapping), ADR-0013 (boring dependencies), ADR-0014 (stack), ADR-0018 (design contract), ADR-0019 (paved road). These cost little now and define the shape everything later depends on.
+- **Suspended for the prototype, restored at pilot:** ADR-0004 (evidence blobs on the native filesystem) — the browser implementation of CS-1 necessarily uses browser storage. The ADR-0004 lint denial stays in force everywhere **except** inside `/app/src/storage/**`, which is already its declared exemption; no new exception row is required, and no capture-path code gains access to a raw storage primitive.
+- **Not exercised by the prototype:** ADR-0017's Object Lock and retention mechanics (server-side, pilot scope). SHA-256 at capture is retained — it is nearly free and preserves the evidentiary shape.
+## Consequences
+Iteration is a URL rather than a TestFlight build, and Blazestack can open the prototype on any device without provisioning. The prototype cannot demonstrate offline capture, crash safety, background upload, or compass metadata — so it exercises the capture-and-extract loop, not the evidentiary differentiation. That is acceptable for feedback and testing, and it must not be mistaken for the pilot story. Restoring native is a delivery-target change plus the native CS-1 implementation.
+## Compliance check
+CS-1 adapter interface is a wave-0 contract task; a second storage surface anywhere else is a gate-1 failure per ADR-0019. Prototype requirement rows (R-100..R-133) carry no offline or crash-safety acceptance criteria — their absence is deliberate and recorded here, not an oversight. Restoring ADR-0002 in full is a precondition of pilot readiness, checked at that readiness record.
