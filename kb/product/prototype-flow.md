@@ -1,6 +1,6 @@
 # Prototype Flow — screens and states
 <!-- Budget: 250 lines. Owner file for the prototype's screen-by-screen flow: states, transitions, ops written, copy. -->
-<!-- STATUS: DRAFT (owner approval pending). Implements kb/product/prototype-prd.md R-100..R-123 under the ADR-0018 design contract. -->
+<!-- STATUS: DRAFT (owner approval pending). Implements kb/product/prototype-prd.md R-100..R-133 under the ADR-0018 design contract. -->
 <!-- Written as state machines, not prose: every screen lists its states, what shows in each, and what transitions out. Agents build UI far better from this than from description. -->
 
 ## The loop in one line
@@ -57,7 +57,7 @@ The two capture actions are the screen. Everything else is subordinate to them.
 |---|---|---|
 | `empty` | Both capture actions prominent; evidence strip absent; "Next" disabled while the prompt is required | photo → `captured` · record → `recording` · unavailable → `resolved` |
 | `recording` | Elapsed timer, live level meter, button becomes Stop. **Only exit is Stop** — no navigation mid-recording | stop → `captured` |
-| `captured` | Evidence strip with every photo and recording so far; both capture actions remain available for more; "Next" enabled | more → stays here · Next → next prompt, or section end → SCR-4 |
+| `captured` | Evidence strip with every photo and recording so far; both capture actions remain available for more; "Next" enabled | more → stays here · Next → next prompt; at section end → SCR-0 or straight into the next section. Derivation is already running in the background |
 | `resolved` | "Marked unavailable" chip with undo | Next → advance |
 
 **Multiple captures per prompt are normal, not exceptional** — a panel might warrant twenty-five photographs and forty seconds of narration, and one capture may populate several fields (R-100's many-to-many). **Neither modality is required** (R-126): dark or wet means no photographs, sirens mean no narration, and both absences are fine.
@@ -81,7 +81,7 @@ Copy: secondary "Not available here" (R-110); primary "Next".
 
 | State | Shows | Exit |
 |---|---|---|
-| `prompt` | "Electrical Subpanel 1 captured." Primary "Add another subpanel" · secondary "No more subpanels" | add → SCR-2 at the instance's first field, header now "Subpanel 2" · done → SCR-4 |
+| `prompt` | "Electrical Subpanel 1 captured." Primary "Add another subpanel" · secondary "No more subpanels" | add → SCR-2 at the new instance, header now "Subpanel 2" · done → SCR-0 or next section |
 
 Each instance carries the full field set independently; instance index rides on every op.
 
