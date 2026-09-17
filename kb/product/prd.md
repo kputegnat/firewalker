@@ -1,4 +1,5 @@
 # PRD — Field Capture Platform (Fire Inspection & Investigation)
+<!-- SCOPE STATUS (owner, 2026-09-17): this document is FULL-PRODUCT CONTEXT AND VISION, not the current build. The current build is the prototype — see /kb/product/prototype-prd.md (R-100..R-123), which wins for prototype work. R-001..R-094 return to active scope at pilot planning. -->
 <!-- Front-door P2 artifact. Budget: 500 lines. -->
 <!-- PDD disposition (owner, Phase C, 2026-09-12 — supersedes the earlier "never authored" note): the PDD exists at /docs/product-design.md (v0.1 draft); [PDD §x] citations resolve against it. Precedence: this PRD + accepted ADRs govern wherever they differ from the PDD (e.g., R-081 vendor-brokered SSO supersedes PDD §8.8 Entra-first; ADR-0018 quantifies §5.2). PDD is rationale/context, never a blocker. -->
 <!-- Matrix seeded from these rows (all `unplanned`). Task refs assigned by the planner at dissection. -->

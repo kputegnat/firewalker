@@ -1,4 +1,5 @@
 # Readiness Record — Field Capture Platform / E01 (offline capture spine)
+<!-- PARKED (owner scope change, 2026-09-17): E01 is full-product scope, not the current build. This record and its device checklist return at pilot planning. The current build is the prototype — see /kb/product/prototype-prd.md; its own readiness record supersedes this one for now. Design contract (ADR-0018), canonical surfaces (ADR-0019) and the ADR set remain live and binding. -->
 <!-- Front-door P4 artifact (DRAFT — owner sign-off pending; execution may not start without the signed record). -->
 Date: 2026-09-06   Owner sign-off: ____ (pending)
 

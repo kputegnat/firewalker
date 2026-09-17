@@ -1,5 +1,6 @@
 # E01 Device-Validation Checklist
 <!-- Working state (validation-records). Owner signs each entry at milestone validation; the E01 readiness record and PRD AC [device] tags reference these DV-IDs. -->
+<!-- PARKED with readiness-record-E01 (owner, 2026-09-17): device legs are native/pilot scope; the browser prototype (ADR-0020) exercises none of them. -->
 <!-- Channel decision (owner, Phase C): locked tests run at mocked-plugin logic level on Linux runners; emulator smoke once per epic pre-milestone (non-blocking); THIS list runs on physical hardware at milestone validation. When unattended runs begin, add a nightly non-blocking emulator job. -->
 
 Status: PENDING — E01 not yet at milestone. Both platforms = physical iOS + Android devices.
