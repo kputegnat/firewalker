@@ -20,13 +20,13 @@ Blazestack's six steps still map on, but the sequence is decoupled rather than s
 
 | State | Shows | Exit |
 |---|---|---|
-| `overview` | Section rows with fields-resolved counts ("Electrical Supply · 6 of 9") · unassigned-capture tray if any · floating record button · "Export" always available | section → SCR-2 · unassigned item → assignment sheet · record → capture, then assign · export → SCR-8 |
+| `overview` | Section rows with capture coverage + processing ("Electrical Supply · 7 of 8 captured · 3 processing"; flags/gaps appear once derived) · unassigned-capture tray if any · floating record button · "Export" always available | section → SCR-2 · unassigned item → assignment sheet · record → capture, then assign · export → SCR-8 |
 
 The unassigned tray is what makes "capture now, file it later" safe: nothing recorded is ever lost for want of a home.
 
 ## Global chrome (every screen except SCR-1)
 - **Top bar:** back chevron · section name ("Electrical Supply") · upload-state dot (CS-12 sync tokens: queued / uploading / safe — icon + label, never colour alone).
-- **Progress strip:** "4 of 9" for the active section. Tabular numerals.
+- **Progress strip (R-109):** capture coverage primary, processing secondary — "7 of 8 captured · 3 processing". Tabular numerals. Coverage updates instantly and offline; fields-resolved detail lives at review, never here.
 - **No bottom nav.** One primary action per screen, `touch.target.primary` (64px).
 
 ---
@@ -55,7 +55,7 @@ The two capture actions are the screen. Everything else is subordinate to them.
 ### States
 | State | Shows | Exit |
 |---|---|---|
-| `empty` | Both capture actions prominent; evidence strip absent; "Next" disabled while the prompt is required | photo → `captured` · record → `recording` · unavailable → `resolved` |
+| `empty` | Both capture actions prominent; evidence strip absent; "Next" disabled while the prompt is required. **Gate prompts (R-106) render one-tap Yes / No / Unknown here instead of capture actions — the sole form exception; a tap is a selection op and immediately prunes downstream prompts** | photo → `captured` · record → `recording` · gate tap → advance · unavailable → `resolved` |
 | `recording` | Elapsed timer, live level meter, button becomes Stop. **Only exit is Stop** — no navigation mid-recording | stop → `captured` |
 | `captured` | Evidence strip with every photo and recording so far; both capture actions remain available for more; "Next" enabled | more → stays here · Next → next prompt; at section end → SCR-0 or straight into the next section. Derivation is already running in the background |
 | `resolved` | "Marked unavailable" chip with undo | Next → advance |

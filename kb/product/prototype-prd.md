@@ -57,8 +57,8 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: two subpanel instances captured; ops carry distinct instance indices; deleting instance 1 leaves instance 2's ops intact and correctly indexed.
 - R-108 Local-first buffering: ops and blobs persist locally before upload; a mid-session reload loses zero captures. All writes via CS-1, CS-2, CS-3.
   - AC: 20 ops written, page reloaded, all 20 readable and valid; no direct storage primitive appears in the diff (gate 1).
-- R-109 **Completeness is measured in target fields resolved, not prompts captured.** Because no modality is required and evidence arrives out of order, "how much is captured" is not a meaningful number; "how many fields still have no value" is. Reported per section and for the case.
-  - AC: the indicator equals fixture-precomputed resolved/outstanding counts at three checkpoints of a scripted R-102 walk; adding evidence that derives two further fields decreases outstanding by exactly two; a field marked unavailable counts as resolved, not derived.
+- R-109 **Completeness has two readings, in fixed priority (owner decision D2). Primary: capture coverage** — applicable prompts with evidence vs without ("7 of 8 captured"), computable instantly and offline; this is the on-scene meter, because "did I get everything before the building is released" must be answerable with no signal. **Secondary: processing count** — evidence items still queued or deriving ("3 still processing"). Fields-resolved remains the review-time detail (SCR-5 gap rows), never the on-scene meter.
+  - AC: coverage and processing counts equal fixture-precomputed values at three checkpoints of a scripted R-102 walk with derivation stubbed slow; coverage updates instantly on capture with zero network; a prompt suppressed by a gate (R-106) leaves the coverage denominator; a prompt marked unavailable counts as covered.
 - R-110 Mark unavailable and continue (their language for a documented gap), recorded as an op — available on a capture prompt and on an individual target field.
   - AC: a prompt or field marked unavailable yields an op carrying its ref and reason value.
 
