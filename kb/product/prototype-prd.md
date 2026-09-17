@@ -35,8 +35,18 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: validates against R-100; ≥25 target fields; ≥1 conditional gate; ≥1 repeating group; every target field is reachable from at least one capture prompt; the renderer consumes it as loader input only, with no template-specific code paths (pr-review enforced).
 
 ### Capture — photographs and narration first
-- R-103 Capture-prompt renderer: one capture prompt per screen, **camera and microphone as the primary actions**, per the ADR-0018 design contract. Token values resolve from CS-12; raw literals lint-denied.
-  - AC: renderer walks the full R-102 template in the web test env; every capture prompt offers photo and voice without additional navigation; touch-target and type floors assert ADR-0018 tokens (≥48px targets, ≥64px primary, ≥18px body).
+- R-103 Capture-prompt renderer: one capture prompt per screen, **camera and microphone as the primary actions**, per the ADR-0018 design contract. Navigation is **non-linear** — any section, any prompt, in any order. Token values resolve from CS-12; raw literals lint-denied.
+  - AC: renderer walks the full R-102 template in the web test env; every capture prompt offers photo and voice without additional navigation; a prompt in section 3 is reachable without completing sections 1–2; touch-target and type floors assert ADR-0018 tokens (≥48px targets, ≥64px primary, ≥18px body).
+- R-126 **No modality is required.** A prompt is satisfiable by photographs alone, narration alone, both, or neither — field conditions decide. Darkness, rain, and smoke rule out photography; sirens and scene noise rule out narration; neither absence blocks progress.
+  - AC: a section completes derivation with photo-only evidence, with audio-only evidence, and with a mix across prompts; no validation path requires a specific modality.
+- R-127 **Evidence may arrive later and out of band.** Photographs taken on a separate camera import by file; narration recorded back at the vehicle or the station attaches to any prompt afterwards. Imported media carries its own EXIF and device timestamp, distinct from the import time.
+  - AC: a DSLR-sourced file imports with its original EXIF timestamp preserved and its import time recorded separately; narration attached to a prompt an hour after that prompt's photographs produces a derivation drawing on both.
+- R-128 **Capture now, file it later.** Recording is reachable from any screen; a capture made while the investigator is elsewhere in the case can be assigned to any prompt or section, or left unassigned for triage.
+  - AC: audio recorded while section 3 is open, then assigned to a section 1 prompt, derives against section 1's target fields; an unassigned capture is listed for assignment and never silently dropped.
+- R-129 **Photo selection for derivation, quality-ranked.** All photographs are retained as evidence; the investigator selects which go to derivation, multi-select, defaulted to the highest-scoring. A client-side score (sharpness by Laplacian variance, plus exposure) is computed at capture and on import. The score **orders and advises; it never excludes.**
+  - AC: 25 photographs on one prompt present ranked by score with the top-scoring preselected; the investigator can select any subset including a low-scoring frame; a below-threshold capture raises a retake prompt at capture time that is dismissible; no photograph is ever withheld from selection.
+- R-130 **Narrate while reviewing photographs.** The recorder is available while browsing a prompt's photographs, and the record marks which photograph was on screen for each span of the audio.
+  - AC: a recording made while moving through three photographs yields view-correlation spans resolving to those photo ops; derivation receives the correlation alongside the transcript.
 - R-104 Guided photography: each capture prompt states what to photograph and why, and accepts multiple photographs before advancing. Blob write and checksum via CS-3.
   - AC: three photographs captured against one prompt yield three ops sharing that prompt ref, each with its own checksum; op schema rejects a photo op missing device timestamp or coordinates.
 - R-105 Spoken narration bound to the capture prompt; foreground recording with elapsed-time feedback. Op appended via CS-2; audio blob and checksum via CS-3.
@@ -47,10 +57,10 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: two subpanel instances captured; ops carry distinct instance indices; deleting instance 1 leaves instance 2's ops intact and correctly indexed.
 - R-108 Local-first buffering: ops and blobs persist locally before upload; a mid-session reload loses zero captures. All writes via CS-1, CS-2, CS-3.
   - AC: 20 ops written, page reloaded, all 20 readable and valid; no direct storage primitive appears in the diff (gate 1).
-- R-109 Capture completeness: which capture prompts have evidence and which do not, for the active section.
-  - AC: the indicator equals fixture-precomputed counts at three checkpoints of a scripted R-102 walk; a prompt marked unavailable counts as resolved, not captured.
-- R-110 Mark unavailable and continue (their language for a documented gap), recorded as an op.
-  - AC: a prompt marked unavailable yields an op carrying the prompt ref and reason value.
+- R-109 **Completeness is measured in target fields resolved, not prompts captured.** Because no modality is required and evidence arrives out of order, "how much is captured" is not a meaningful number; "how many fields still have no value" is. Reported per section and for the case.
+  - AC: the indicator equals fixture-precomputed resolved/outstanding counts at three checkpoints of a scripted R-102 walk; adding evidence that derives two further fields decreases outstanding by exactly two; a field marked unavailable counts as resolved, not derived.
+- R-110 Mark unavailable and continue (their language for a documented gap), recorded as an op — available on a capture prompt and on an individual target field.
+  - AC: a prompt or field marked unavailable yields an op carrying its ref and reason value.
 
 ### Sync (thin)
 - R-111 Op and media upload, idempotent by op UUID. All network via CS-5, queue via CS-4.

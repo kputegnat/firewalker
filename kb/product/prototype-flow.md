@@ -8,6 +8,18 @@ Case start → **[ shoot and talk → shoot and talk → … → section end →
 
 The investigator never fills a form during capture. They photograph and narrate; fields appear afterwards, already proposed. Blazestack's six steps map on: prompt (SCR-2) → capture (SCR-2) → extract (SCR-4) → review (SCR-5) → confirm/correct (SCR-5/6) → save and advance (SCR-7).
 
+## Navigation model
+**Non-linear by default.** A case overview (SCR-0) lists sections with fields-resolved counts; any section and any prompt is reachable from it at any time. The per-prompt "Next" is a convenience path through a section, never the only one. Recording is reachable from every screen (R-128), so a thing remembered in section 3 can be narrated immediately and filed against section 1.
+
+## SCR-0 — Case overview
+**Purpose:** the hub. See where the case stands, go anywhere, capture anything.
+
+| State | Shows | Exit |
+|---|---|---|
+| `overview` | Section rows with fields-resolved counts ("Electrical Supply · 6 of 9") · unassigned-capture tray if any · floating record button · "Export" when any section is confirmed | section → SCR-2 · unassigned item → assignment sheet · record → capture, then assign · export → SCR-8 |
+
+The unassigned tray is what makes "capture now, file it later" safe: nothing recorded is ever lost for want of a home.
+
 ## Global chrome (every screen except SCR-1)
 - **Top bar:** back chevron · section name ("Electrical Supply") · upload-state dot (CS-12 sync tokens: queued / uploading / safe — icon + label, never colour alone).
 - **Progress strip:** "4 of 9" for the active section. Tabular numerals.
@@ -44,7 +56,15 @@ The two capture actions are the screen. Everything else is subordinate to them.
 | `captured` | Evidence strip with every photo and recording so far; both capture actions remain available for more; "Next" enabled | more → stays here · Next → next prompt, or section end → SCR-4 |
 | `resolved` | "Marked unavailable" chip with undo | Next → advance |
 
-**Multiple captures per prompt are normal, not exceptional** — a panel might warrant three photographs and forty seconds of narration, and one capture may populate several fields (R-100's many-to-many).
+**Multiple captures per prompt are normal, not exceptional** — a panel might warrant twenty-five photographs and forty seconds of narration, and one capture may populate several fields (R-100's many-to-many). **Neither modality is required** (R-126): dark or wet means no photographs, sirens mean no narration, and both absences are fine.
+
+### SCR-2a — Evidence tray (from `captured`, tap the strip)
+| State | Shows | Exit |
+|---|---|---|
+| `browsing` | Photographs ranked by quality score, top-scoring preselected, checkboxes for derivation selection (R-129); import button for camera-sourced files (R-127); **record button live while browsing** (R-130) | select → updates derivation set · record → `narrating` · back → SCR-2 |
+| `narrating` | Recording while the investigator flips through photographs; each photo view span is marked against the audio (R-130) | stop → `browsing`, correlation stored |
+
+Low-scoring captures raise a dismissible retake nudge at capture time. **No photograph is ever excluded from selection** — the score orders, the investigator decides.
 
 Rules: no long-press, no swipe-only, no hover (ADR-0018). Browser recording stops when the tab backgrounds — a limit recorded in ADR-0020 and surfaced to the user, not hidden.
 
@@ -145,6 +165,6 @@ This screen is the demo moment: their field names, their option values, their re
 | Required field unanswered | "Confirm section" stays disabled; the `gap` row deep-links back to the prompt |
 
 ## Open flow questions
-1. Case overview screen (list of sections with completion dots, like theirs) — assumed reachable from SCR-7's "Back to case" but not yet specified. Needed for jumping between sections out of order; omit if the prototype is strictly linear.
+1. RESOLVED (owner, 2026-09-17): the prototype is explicitly non-linear — SCR-0 case overview is required, not optional.
 2. SCR-4 blocks advancement per Blazestack's loop; the `slow` escape hatch deviates from their doc deliberately.
 3. Photo cap of 10 per field mirrors their app — confirm it should apply here.
