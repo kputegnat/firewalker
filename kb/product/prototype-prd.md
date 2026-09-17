@@ -29,8 +29,8 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
 ### Contracts (wave 0)
 - R-100 CaptureTemplate schema (zod, /shared). A section carries **capture prompts** (what to photograph, what to narrate) and **target fields** (label, option list, mapping key to the Blazestack field name, and the evidence hints extraction uses). The relationship is **many-to-many: one capture may populate many fields; one field may draw on several captures.** Conditional show-if and repeating groups apply to both.
   - AC: schema compiles strict; R-102 template validates; five invalid fixtures (capture prompt with no target fields, field with no mapping key, dangling show-if target, repeating group with no item schema, unknown answer type) each rejected with an error naming the offending path.
-- R-101 CaptureOp schema (zod, /shared): op UUID, session ref, capture-prompt ref (incl. repeating-group instance index), op type (past-tense namespaced), device timestamp, payload ref + SHA-256.
-  - AC: schema compiles; ops round-trip JSONL serialize→parse deep-equal; rejects a media op with no checksum; rejects a repeating-group op with no instance index.
+- R-101 CaptureOp schema (zod, /shared): op UUID, session ref, capture-prompt ref **or explicit unassigned state** (R-128 requires captures with no home yet; incl. repeating-group instance index when assigned), op type (past-tense namespaced), device timestamp, payload ref + SHA-256.
+  - AC: schema compiles; ops round-trip JSONL serialize→parse deep-equal; rejects a media op with no checksum; rejects a repeating-group op with no instance index; accepts an unassigned op and records its later assignment as a new op, never a mutation.
 - R-102 Seed template from Blazestack Utilities — Electrical Supply, Electrical Subpanels (repeating), Gas Utilities: their field labels, option values, and conditionals as target fields, plus authored capture prompts that guide the photography and narration expected to populate them.
   - AC: validates against R-100; ≥25 target fields; ≥1 conditional gate; ≥1 repeating group; every target field is reachable from at least one capture prompt; the renderer consumes it as loader input only, with no template-specific code paths (pr-review enforced).
 
@@ -48,7 +48,7 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
 - R-130 **Narrate while reviewing photographs.** The recorder is available while browsing a prompt's photographs, and the record marks which photograph was on screen for each span of the audio.
   - AC: a recording made while moving through three photographs yields view-correlation spans resolving to those photo ops; derivation receives the correlation alongside the transcript.
 - R-104 Guided photography: each capture prompt states what to photograph and why, and accepts multiple photographs before advancing. Blob write and checksum via CS-3.
-  - AC: three photographs captured against one prompt yield three ops sharing that prompt ref, each with its own checksum; op schema rejects a photo op missing device timestamp or coordinates.
+  - AC: three photographs captured against one prompt yield three ops sharing that prompt ref, each with its own checksum; coordinates are recorded when the browser grants them and their absence never blocks capture (permission denied, indoors, DSLR import per R-127); a photo op missing a device timestamp is rejected.
 - R-105 Spoken narration bound to the capture prompt; foreground recording with elapsed-time feedback. Op appended via CS-2; audio blob and checksum via CS-3.
   - AC: a simulated 45s recording yields exactly one complete op bound to the correct capture prompt, with a checksummed payload ref.
 - R-106 Conditional logic: a capture prompt's or field's show/hide state follows values already established.

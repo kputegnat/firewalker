@@ -20,7 +20,7 @@ Blazestack's six steps still map on, but the sequence is decoupled rather than s
 
 | State | Shows | Exit |
 |---|---|---|
-| `overview` | Section rows with fields-resolved counts ("Electrical Supply · 6 of 9") · unassigned-capture tray if any · floating record button · "Export" when any section is confirmed | section → SCR-2 · unassigned item → assignment sheet · record → capture, then assign · export → SCR-8 |
+| `overview` | Section rows with fields-resolved counts ("Electrical Supply · 6 of 9") · unassigned-capture tray if any · floating record button · "Export" always available | section → SCR-2 · unassigned item → assignment sheet · record → capture, then assign · export → SCR-8 |
 
 The unassigned tray is what makes "capture now, file it later" safe: nothing recorded is ever lost for want of a home.
 
@@ -38,7 +38,7 @@ The unassigned tray is what makes "capture now, file it later" safe: nothing rec
 |---|---|---|
 | `empty` | Address field (dictation enabled), case-type selector, "Start case" disabled | → `ready` when address non-empty |
 | `ready` | Same, "Start case" enabled | tap → `starting` |
-| `starting` | Spinner on button | success → SCR-2 first prompt |
+| `starting` | Spinner on button | success → SCR-0 case overview |
 
 Copy: title "New case"; field label "Incident address"; button "Start case".
 Note: coordinates are logged silently at start (R-013 disposition — log, never verify).
@@ -104,7 +104,7 @@ Results land quietly and accumulate. Review (SCR-5) is a place the investigator 
 ---
 
 ## SCR-5 — Section review
-**Purpose:** show what the AI proposes, with its evidence (R-120). **Ops:** `review.value.confirmed`, `review.value.rejected`.
+**Purpose:** show what the AI proposes, with its evidence (R-122). **Ops:** `review.value.confirmed`, `review.value.rejected`.
 
 **This is the first screen where fields appear at all.** Row per target field: field label · derived value · provenance chip (📷 photo / 🎙 audio / ✋ manual) · flag chip if any. Tapping the provenance chip opens the source photograph or plays the source audio segment (R-116).
 
@@ -119,15 +119,14 @@ A field the AI could not derive shows as an empty row with "Add manually" — th
 
 | State | Shows | Exit |
 |---|---|---|
-| `reviewing` | All rows; "Confirm section" enabled only when no `gap` remains | tap row → SCR-6 · confirm → SCR-7 |
-| `confirming` | Spinner | → SCR-7 |
+| `reviewing` | All rows; "Mark reviewed" always available — outstanding `gap` rows warn, never block (R-124) | tap row → SCR-6 · mark reviewed → SCR-7 |
 
-**Flagged fields are excluded from any confirm-all action** (ADR-0008). Tapping a value plays the exact audio segment behind it — this is the chain of evidence made visible.
+**Flagged fields are excluded from any accept-all-values action** (ADR-0008); the reviewed marker itself is never gated. Tapping a value plays the exact audio segment behind it — this is the chain of evidence made visible.
 
 ---
 
 ## SCR-6 — Correction
-**Purpose:** change a value, by touch or by voice, with the change shown before it applies (R-121). **Ops:** `review.correction.proposed`, `review.correction.applied|rejected`.
+**Purpose:** change a value, by touch or by voice, with the change shown before it applies (R-123). **Ops:** `review.correction.proposed`, `review.correction.applied|rejected`.
 
 | State | Shows | Exit |
 |---|---|---|
@@ -152,11 +151,11 @@ Nothing is ever applied unshown. Corrections append new ops; the prior value sta
 ---
 
 ## SCR-8 — Case output
-**Purpose:** prove the prototype's endpoint — fields, delivered (R-123). **Ops:** `session.case.exported`.
+**Purpose:** prove the prototype's endpoint — fields, delivered (R-125). **Ops:** `session.case.exported`.
 
 | State | Shows | Exit |
 |---|---|---|
-| `summary` | Per-section confirmed counts, flags outstanding, proposed options listed | "View JSON" → `json` · "Copy JSON" → clipboard |
+| `summary` | Per-section reviewed/resolved counts, flags outstanding, unreviewed sections warned, proposed options listed | "View JSON" → `json` · "Copy JSON" → clipboard |
 | `json` | The Blazestack-shaped payload, monospace, scrollable, copyable | back → `summary` |
 
 This screen is the demo moment: their field names, their option values, their repeating-group arrays — ready for their system to consume.
@@ -168,8 +167,8 @@ This screen is the demo moment: their field names, their option values, their re
 |---|---|
 | Upload queued | Chrome dot shows `queued`; capture never blocks |
 | Extraction unavailable | SCR-4 `failed` path; capture continues; review deferred |
-| Reload mid-section | Session resumes at the last unanswered prompt; confirmed answers intact (R-109) |
-| Required field unanswered | "Confirm section" stays disabled; the `gap` row deep-links back to the prompt |
+| Reload mid-session | Session resumes where the investigator left off; all captures intact (R-108) |
+| Required field unresolved | `gap` row warns and deep-links back to its prompt; marking reviewed is never blocked (R-124) |
 
 ## Open flow questions
 1. RESOLVED (owner, 2026-09-17): the prototype is explicitly non-linear — SCR-0 case overview is required, not optional.
