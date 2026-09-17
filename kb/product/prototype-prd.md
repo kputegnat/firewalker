@@ -69,6 +69,12 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: each state renders with icon + label (never colour alone); "safe" appears only after server acknowledgement.
 
 ### Derivation — the thesis under test
+- R-131 **Derivation never blocks capture, for any duration.** Processing begins the moment an evidence item lands and runs entirely in the background; there is no waiting screen, no spinner in the capture path, and no gate between one capture and the next. Time on scene is scarce — an investigator may have minutes inside a structure — and the app must never spend that time on its own processing.
+  - AC: with derivation stubbed to take 60s per item, a scripted walk captures across three sections without a single blocked interaction; capture actions remain responsive throughout; results appear as they complete without interrupting the active screen.
+- R-132 **Derivation is incremental, per evidence item** — not a per-section batch. Each photograph and each transcript contributes proposals as it completes; a section's field set accumulates.
+  - AC: a section with evidence added an hour apart derives twice, each run contributing to the same field set; the later run neither discards nor overwrites the earlier proposals (ADR-0007 versioning).
+- R-133 **Conflicting proposals are flagged, never silently reconciled.** When two evidence items propose different values for one field, both are presented with their provenance for the investigator to settle (ADR-0008).
+  - AC: a fixture where a photograph proposes "2" and narration proposes "3" for tripped breakers yields a conflict flag carrying both values and both source refs; neither is auto-selected.
 - R-113 Transcription of narration with word-level confidence. Model invocation via CS-13.
   - AC: a fixture audio file yields a stored transcript with per-word confidence; the transcript artifact persists independently of any derivation.
 - R-114 **Visual derivation: photographs produce proposed field values.** Images are submitted to a vision model with the section's target fields and their option lists; the model proposes values for the fields the image can support.
@@ -93,8 +99,9 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: every derived value traces to its source op; a target field with no supporting evidence is shown as a gap, not left blank.
 - R-123 Correct or enter a value — by touch, by keyboard, or by spoken instruction. **Manual entry is the fallback path for anything not derived.** A correction is shown before it is applied.
   - AC: a spoken correction produces a proposed change displayed for approval; rejecting it leaves the original value and records the rejection; a manually entered value is marked as manual in the R-121 record.
-- R-124 Confirm section, then advance.
-  - AC: confirmation is blocked while any required target field is unresolved; corrections after confirmation create new ops rather than editing values.
+- R-124 Mark a section reviewed. **Nothing is immutable in the prototype** — every value stays editable after review, and a reviewed section can be revisited and changed freely. Review is a "I've looked at this" marker for the investigator's own tracking and for export, not a lock.
+  - AC: a reviewed section's values remain editable; editing one clears nothing else; the reviewed marker is user-settable and user-clearable.
+  - Note: the finality gate — the point where data becomes immutable — most likely belongs at sync or export into Blazestack's system. Out of scope here; recorded so it is a later decision rather than an omission.
 
 ### Output
 - R-125 JSON export in Blazestack field shapes, produced by the mapping module (CS-11); vendor field names and option values exist only inside it.

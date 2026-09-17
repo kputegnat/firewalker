@@ -4,9 +4,13 @@
 <!-- Written as state machines, not prose: every screen lists its states, what shows in each, and what transitions out. Agents build UI far better from this than from description. -->
 
 ## The loop in one line
-Case start → **[ shoot and talk → shoot and talk → … → section end → derive → review what the AI produced → correct → confirm ]** per section → export.
+Case start → **shoot and talk, shoot and talk, shoot and talk** (derivation running invisibly the whole time) → review the derived fields whenever it suits — in the vehicle, at the station, next week → correct → export.
 
-The investigator never fills a form during capture. They photograph and narrate; fields appear afterwards, already proposed. Blazestack's six steps map on: prompt (SCR-2) → capture (SCR-2) → extract (SCR-4) → review (SCR-5) → confirm/correct (SCR-5/6) → save and advance (SCR-7).
+Two rules govern everything below:
+1. **The investigator never fills a form during capture.** They photograph and narrate; fields appear afterwards, already proposed.
+2. **The app never makes them wait.** Derivation is background work; capture is always available, always responsive.
+
+Blazestack's six steps still map on, but the sequence is decoupled rather than serial: prompt and capture (SCR-2) happen on scene; extract (background), review and correct (SCR-5/6) happen whenever; save and advance (SCR-7) is a marker, not a gate.
 
 ## Navigation model
 **Non-linear by default.** A case overview (SCR-0) lists sections with fields-resolved counts; any section and any prompt is reachable from it at any time. The per-prompt "Next" is a convenience path through a section, never the only one. Recording is reachable from every screen (R-128), so a thing remembered in section 3 can be narrated immediately and filed against section 1.
@@ -83,16 +87,19 @@ Each instance carries the full field set independently; instance index rides on 
 
 ---
 
-## SCR-4 — Deriving
-**Purpose:** the honest waiting state while transcription, visual derivation, and narrative derivation run (R-113/R-114/R-115). **Ops:** none.
+## SCR-4 — Derivation (there is no screen; this is the point)
+**Deleted as a blocking state.** Derivation runs in the background from the moment each evidence item lands (R-131). The investigator never waits — not fifteen seconds, not one. They may have minutes inside a structure, and none of them belong to us.
 
-| State | Shows | Exit |
+Derivation surfaces only as **chrome**, never as a gate:
+
+| Indicator state | Shows | Behaviour |
 |---|---|---|
-| `working` | Section name, "Reading your photos and notes…", per-item ticks as each photograph and recording is processed | all done → SCR-5 |
-| `slow` (>15s) | Adds "Still working — you can keep capturing" + link to next section | user leaves → capture continues, review queued |
-| `failed` | "Couldn't process 2 of 6 answers" + Retry; **captured evidence is never lost** | retry → `working` · skip → SCR-5 with those fields unpopulated and flagged |
+| `idle` | nothing | — |
+| `processing` | small count in the top bar ("3 processing"), no motion that competes with capture | capture fully responsive; tapping it opens SCR-5 for whatever is already derived |
+| `ready` | badge on the section / case overview: "6 fields derived" | purely informational; review is a destination, never an interruption |
+| `failed` | badge "2 items couldn't be read" with retry | **captured evidence is never lost**; those fields simply remain underived |
 
-The `slow` path exists because blocking an investigator on a model call is the failure mode their loop invites.
+Results land quietly and accumulate. Review (SCR-5) is a place the investigator chooses to go — at the vehicle, at the station, or a week later — not a step in the capture path.
 
 ---
 
@@ -132,15 +139,15 @@ Nothing is ever applied unshown. Corrections append new ops; the prior value sta
 
 ---
 
-## SCR-7 — Section complete
-**Purpose:** close the section and move on (R-122). **Ops:** `session.section.confirmed`.
+## SCR-7 — Section reviewed
+**Purpose:** mark a section as looked-at and offer somewhere to go next (R-124). **Ops:** `session.section.reviewed`.
 
 | State | Shows | Exit |
 |---|---|---|
-| `done` | "Electrical Supply confirmed · 9 of 9" · upload-state dot · primary "Next section: Electrical Subpanels" · secondary "Back to case" | next → SCR-2 · back → case overview |
-| `last-section` | Primary becomes "Finish case" | → SCR-8 |
+| `done` | "Electrical Supply · 9 of 9 resolved" · reviewed toggle · upload-state dot · primary "Next section: Electrical Subpanels" · secondary "Back to case" | next → SCR-2 · back → SCR-0 |
+| `last-section` | Primary becomes "Export case" | → SCR-8 |
 
-Confirmed values are immutable; later changes are new ops (see open question in the PRD).
+**Nothing is locked.** A reviewed section reopens and edits freely; the marker is the investigator's own bookkeeping. The finality gate — if there is one — belongs at sync or export into Blazestack's system, and is deliberately out of prototype scope.
 
 ---
 
@@ -166,5 +173,5 @@ This screen is the demo moment: their field names, their option values, their re
 
 ## Open flow questions
 1. RESOLVED (owner, 2026-09-17): the prototype is explicitly non-linear — SCR-0 case overview is required, not optional.
-2. SCR-4 blocks advancement per Blazestack's loop; the `slow` escape hatch deviates from their doc deliberately.
+2. RESOLVED (owner, 2026-09-17): derivation never blocks capture at all. SCR-4 deleted as a screen; background only. Deliberate deviation from their blocking loop.
 3. Photo cap of 10 per field mirrors their app — confirm it should apply here.

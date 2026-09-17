@@ -18,7 +18,7 @@ Last regenerated: 2026-09-17 | Files: 24 | Over-budget: 0 | Stale (>30d): 0
 | /kb/codemap/services.md | Service/module inventory | 400 | 2026-09-11 |
 | /kb/codemap/data-access.md | Query/repository inventory | 400 | 2026-09-11 |
 | /kb/product/prd.md | Full-product requirements (CONTEXT; not current scope) | 500 | 2026-09-17 |
-| /kb/product/prototype-prd.md | THE CURRENT BUILD: prototype requirements R-100..R-130 | 300 | 2026-09-17 |
+| /kb/product/prototype-prd.md | THE CURRENT BUILD: prototype requirements R-100..R-133 | 300 | 2026-09-17 |
 | /kb/product/prototype-flow.md | Prototype screens, states, transitions, copy | 250 | 2026-09-17 |
 | /kb/product/traceability.md | Requirement→story→test ledger | — (working) | — |
 | /kb/runbooks/pipeline.md | How work flows (pointer to engine runbooks) | 100 | 2026-09-11 |
