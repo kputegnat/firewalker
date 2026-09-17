@@ -43,7 +43,7 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: a DSLR-sourced file imports with its original EXIF timestamp preserved and its import time recorded separately; narration attached to a prompt an hour after that prompt's photographs produces a derivation drawing on both.
 - R-128 **Capture now, file it later.** Recording is reachable from any screen; a capture made while the investigator is elsewhere in the case can be assigned to any prompt or section, or left unassigned for triage.
   - AC: audio recorded while section 3 is open, then assigned to a section 1 prompt, derives against section 1's target fields; an unassigned capture is listed for assignment and never silently dropped.
-- R-129 **Photo selection for derivation, quality-ranked.** All photographs are retained as evidence; the investigator selects which go to derivation, multi-select, defaulted to the highest-scoring. A client-side score (sharpness by Laplacian variance, plus exposure) is computed at capture and on import. The score **orders and advises; it never excludes.**
+- R-129 **Photo selection for derivation, quality-ranked.** All photographs are retained as evidence; the investigator selects which go to derivation, multi-select, defaulted to the **3** highest-scoring (config). A client-side score (sharpness by Laplacian variance, plus exposure) is computed at capture and on import. The score **orders and advises; it never excludes.**
   - AC: 25 photographs on one prompt present ranked by score with the top-scoring preselected; the investigator can select any subset including a low-scoring frame; a below-threshold capture raises a retake prompt at capture time that is dismissible; no photograph is ever withheld from selection.
 - R-130 **Narrate while reviewing photographs.** The recorder is available while browsing a prompt's photographs, and the record marks which photograph was on screen for each span of the audio.
   - AC: a recording made while moving through three photographs yields view-correlation spans resolving to those photo ops; derivation receives the correlation alongside the transcript.
@@ -77,7 +77,7 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: a fixture where a photograph proposes "2" and narration proposes "3" for tripped breakers yields a conflict flag carrying both values and both source refs; neither is auto-selected.
 - R-113 Transcription of narration with word-level confidence. Model invocation via CS-13.
   - AC: a fixture audio file yields a stored transcript with per-word confidence; the transcript artifact persists independently of any derivation.
-- R-114 **Visual derivation: photographs produce proposed field values.** Images are submitted to a vision model with the section's target fields and their option lists; the model proposes values for the fields the image can support.
+- R-114 **Visual derivation: photographs produce proposed field values.** Images are **downscaled for the model call** (originals retained at full resolution) and submitted to a vision model with the section's target fields and their option lists; the model proposes values for the fields the image can support.
   - AC: a fixture breaker-panel photograph yields proposed values for at least breaker counts and tripped state; a fixture meter photograph yields a proposed meter number; a photograph supporting no target field yields zero proposals rather than guesses.
 - R-115 **Narrative derivation: transcripts produce proposed field values** for the section's target fields.
   - AC: a fixture transcript covering Electrical Supply yields proposed values for ≥4 mapped fields; derivation runs against the stored transcript, never the raw audio.
@@ -91,8 +91,8 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
   - AC: "pad mounted transformer" against a list containing "Service lateral from a pad-mounted transformer" yields a flagged suggestion, not a new option; an exact match yields an unflagged value.
 - R-120 User-added options: a value with no acceptable match is captured as a **proposed** option, never silently merged into the shared list.
   - AC: a proposed option appears in the export marked as proposed, with the field's existing options unchanged.
-- R-121 **Derivation instrumentation** — for every target field, record: derived visually, derived from narration, derived from both, or not derived; the confidence; and whether the investigator accepted, corrected, or entered it manually.
-  - AC: a completed session exports a per-field derivation record covering every target field; the record distinguishes all four derivation sources and all three investigator outcomes.
+- R-121 **Derivation instrumentation** — for every target field, record: derived visually, from narration, from both, or not derived; the confidence; and the outcome — accepted, corrected, entered manually, **discarded for unresolvable provenance** (else the reliability data silently skews low), or **conflict settled** (recording which source the investigator kept — direct photo-vs-audio reliability data). Exported as **its own artifact, never inside the R-125 vendor-shaped JSON.**
+  - AC: a completed session exports a per-field derivation record covering every target field, distinguishing all derivation sources and all five outcomes, as a separate file from the R-125 export.
 
 ### Review and confirm
 - R-122 Section review: derived values with their flags and provenance; tapping a value opens its source photograph or plays its source audio segment.
@@ -106,6 +106,22 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
 ### Output
 - R-125 JSON export in Blazestack field shapes, produced by the mapping module (CS-11); vendor field names and option values exist only inside it.
   - AC: the export validates against the Blazestack shape fixture; field names and option values match their data map exactly; repeating groups serialise as arrays; proposed options are marked; a vendor field name appearing anywhere outside the mapping module fails gate 1.
+
+## Test strategy (owner decision D3)
+Locked/gate tests run against **recorded model responses** — they verify mechanics (provenance attaches, conflicts flag, versions never overwrite) deterministically, offline, free. **Real-model quality is never a gate:** it runs as an eval over a fixture corpus (panel photos, meter photos, narration clips) and reports through the R-121 scorecard. The scorecard is the prototype’s research output.
+
+## Vocabulary (binding; agents use these words, no synonyms)
+- **Capture prompt** — a guidance step: what to photograph or narrate. Never a form field.
+- **Target field** — a Blazestack case field the AI tries to populate.
+- **Derivation** — AI turning evidence into proposed field values (visual = from photos, narrative = from transcripts).
+- **Evidence item** — one photograph or one recording, checksummed, an op.
+- **Unassigned tray** — captures not yet filed to a prompt/section.
+- **Gate question** — a one-tap Yes/No/Unknown controlling which prompts apply (the sole form exception).
+
+## Deviations from Blazestack’s prototype doc (deliberate; confirm with them)
+1. Derivation never blocks — their loop waits per section before advancing; ours never waits (owner: minutes in a building).
+2. No fields shown during capture — their step 1 arguably displays the field list; we show capture guidance only, fields appear at review.
+3. Gate questions as one-tap answers rather than derived values (D1).
 
 ## Open — carried, not blocking wave 0
 1. **Which fields are visually derivable is genuinely unknown.** Breaker counts, tripped position, meter numbers, and overhead-vs-lateral service look tractable; wiring type (copper vs aluminum) and damage grading look hard. R-121 exists so the prototype answers this with data instead of opinion.
