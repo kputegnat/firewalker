@@ -107,6 +107,16 @@ Purpose: feedback and testing with Blazestack. Not the pilot build. Success is n
 - R-125 JSON export in Blazestack field shapes, produced by the mapping module (CS-11); vendor field names and option values exist only inside it.
   - AC: the export validates against the Blazestack shape fixture; field names and option values match their data map exactly; repeating groups serialise as arrays; proposed options are marked; a vendor field name appearing anywhere outside the mapping module fails gate 1.
 
+## Build profile (owner decisions, 2026-09-17 - the prototype is built differently than the product)
+**Shapes are real, plumbing is disposable.** Same language and code shapes as the product (TypeScript, React/Vite browser client, one Fastify service, zod schemas in /shared, routes-services-repos, CS wrappers) - so the code carries forward. Deliberately lightweight everywhere else: one small container (App Runner, us-east-1, owner AWS account - never the engine box), SQLite behind the repository layer, S3 for blobs, an in-process background queue instead of SQS, Bedrock + Transcribe called directly, one shared access code at the door.
+**Scale bar:** a dozen or two users, not fragile - survives restarts, never loses an upload, degrades gracefully when a model call fails. Nothing more.
+**Quality bar (non-negotiable):** code an outside engineer could open cold and enjoy - small, obvious, well-named, documented where it counts. No AI-slop patterns, no over-abstraction, no clever structures. If Blazestack looks under the hood, the code itself should impress. pr-review enforces this bar as a finding class.
+
+- R-134 Model configuration: the vision model and the speech-to-text model are named in config, swappable at runtime through CS-13, plus a small admin page with the two selectors. Every artifact already records its model id (R-117), so cross-model comparison needs nothing extra.
+  - AC: switching the vision model in the admin page changes the model id on the next derivation artifact without redeploy; config rejects an unknown model id with a named error.
+- R-135 Model test bench: a page to upload one photograph or one audio clip, pick a model, and see the raw result (transcript with confidences, or field proposals with what-the-model-saw) - the same pipeline code paths, outside any case.
+  - AC: a bench run produces the same artifact shape as a case run, marked bench so it never joins case data or the R-121 scorecard.
+
 ## Test strategy (owner decision D3)
 Locked/gate tests run against **recorded model responses** — they verify mechanics (provenance attaches, conflicts flag, versions never overwrite) deterministically, offline, free. **Real-model quality is never a gate:** it runs as an eval over a fixture corpus (panel photos, meter photos, narration clips) and reports through the R-121 scorecard. The scorecard is the prototype’s research output.
 
